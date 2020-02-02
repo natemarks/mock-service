@@ -9,8 +9,6 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
-
-	"github.com/gorilla/mux" // need to use dep for package management
 )
 
 func WaitResponse(w string) string {
@@ -28,13 +26,10 @@ func TestEndpoint(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	router := mux.NewRouter()
-	router.HandleFunc("/", TestEndpoint).Methods("GET")
+	m := http.NewServeMux()
 
-	srv := &http.Server{
-		Addr:    ":8080",
-		Handler: router,
-	}
+	srv := http.Server{Addr: ":8080", Handler: m}
+	m.HandleFunc("/", TestEndpoint)
 
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
