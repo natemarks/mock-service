@@ -1,6 +1,10 @@
 package main
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+	"time"
+)
 
 func TestWaitResponse(t *testing.T) {
 	res := WaitResponse("50ms")
