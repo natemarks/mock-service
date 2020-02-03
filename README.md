@@ -9,47 +9,64 @@ The purpose of the mock service is to give devops the simplest possible service 
  
  # Usage
  
- When I run the mock-service locally, it listens on port 8080 with a graceful shutdown timout htat is either the deafult or a parseable string in the environment variable 'SERVICE_GRACEFUL_SHUTDOWN_TIMEOUT'  example "5000ms".  Any string that is valid for ParseDuration works here (https://golang.org/pkg/time/#example_ParseDuration).
+ When I run the mock-service locally, it listens on port 8080 with a graceful shutdown timout htat is either the default or a parsable string in the environment variable 'SERVICE_GRACEFUL_SHUTDOWN_TIMEOUT'  example "5000ms".  Any string that is valid for ParseDuration works here (https://golang.org/pkg/time/#example_ParseDuration).
  
+ Fomr a client, I can run:
+ ```shell script
+ curl -X GET 'http://localhost:8080/?wait=3000ms'
+#  the service waits for 3000ms before responding
+ You waited for 3000%
+ ```
+ This wait is important because it lets us test our graceful shutdown. If my SERVICE_GRACEFUL_SHUTDOWN_TIMEOUT is set to 5000ms and I initiate a 3000ms request, then CTRL-C th service immediately:
+  - the service should stop taking new requests (this applies to / and to /heartbeat, so a load balancer could take it out of service right away)
+  - the service would wait for the request to finish, which take 3000ms, then it would exit with a log message indicating that graceful shutdown had completed.  This is REALLY important for any service because we know that the lifecycle automation didn't kill the service, the service gracefully closed out.
+  
+  The service logs should look something like this. Note that you see the ^C BEFORE the 3000ms request completes and the Graceful Shutdown Complete message at the end
+  ```text
+./mock-service 
+INFO[2020-02-03T04:48:46-05:00] SERVICE_GRACEFUL_SHUTDOWN_TIMEOUT is set to 5s 
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:   export GIN_MODE=release
+ - using code:  gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] GET    /                         --> main.main.func1 (5 handlers)
+[GIN-debug] GET    /heartbeat                --> main.main.func2 (5 handlers)
+^CINFO[2020-02-03T04:48:53-05:00] Shutdown Server ...                          
+INFO[2020-02-03T04:48:55-05:00] ::1 - Nathans-MacBook-Pro.local [03/Feb/2020:04:48:55 -0500] "GET /" 200 21 "" "curl/7.54.0" (3003ms)  clientIP="::1" dataLength=21 hostname=Nathans-MacBook-Pro.local latency=3003 method=GET path=/ referer= statusCode=200 userAgent=curl/7.54.0
+[GIN] 2020/02/03 - 04:48:55 | 200 |  3.002922732s |             ::1 | GET      /?wait=3000ms
+INFO[2020-02-03T04:48:55-05:00] Graceful shutdown complete          
+```
+  
+
+Alternatively, if I initiate a 50 second request and CTRL-C the service, it should wait for the 5 second SERVICE_GRACEFUL_SHUTDOWN_TIMEOUT period , then forceitself closed.  Critically, it should log that it closed by timeout rather than gracefully because that tells us one or more transaction may have failed because of the service shutting down.
  
- 
-The service should invoke a graceful shutdonw letting eerything finish when a sigterm is caught.  We play with this by killing he service with ctrl-c while tasls are running.  There is a hardcoded  shutdown timeout of 5 seconds :
-```text
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-```
-
-this means that if you run a  3 second request and then hit ctrl-c on the server, the client should see  that the request wats for 3 seconds then succeeds
-```shell script
-curl -X GET 'http://localhost:8080/?wait=3000ms'
-You waited for 3000%
-```
-
-On the server logs  you should see tsomething like:
-```text
-2020/02/02 08:32:23 Server Started
-^C2020/02/02 08:40:02 Server Stopped
-2020/02/02 08:40:02 Server Exited Properly
-
-```
-
-By contrast, if you run a really long request then switch to the server and hist ctrl-c:, the client should see a failed request
-```shell script
-curl -X GET 'http://localhost:8080/?wait=50000ms'
-curl: (52) Empty reply from server
-```
- and the server log should look something like:
+ The log should look something like this. NOTE the 'context deadline exceeded'  final message rather than the Graceful shutdown:
  ```text
+ ./mock-service 
+INFO[2020-02-03T04:50:42-05:00] SERVICE_GRACEFUL_SHUTDOWN_TIMEOUT is set to 5s 
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
 
-2020/02/02 08:45:17 Server Started
-^C2020/02/02 08:45:22 Server Stopped
-2020/02/02 08:45:27 Server Shutdown Failed:context deadline exceeded
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:   export GIN_MODE=release
+ - using code:  gin.SetMode(gin.ReleaseMode)
 
+[GIN-debug] GET    /                         --> main.main.func1 (5 handlers)
+[GIN-debug] GET    /heartbeat                --> main.main.func2 (5 handlers)
+^CINFO[2020-02-03T04:50:52-05:00] Shutdown Server ...                          
+FATA[2020-02-03T04:50:57-05:00] Server Shutdown: context deadline exceeded 
 ```
 
-## Usage
-curl -X GET 'http://localhost:8080/?wait=5000ms'
 
-(the response takes 5000 milliseconds)
-You waited for 5000ms%
+## Heartbeat
+This is an example of the heartbeat test. I should probably move this to a different port.  we usually us 8786
+```shell script
+curl -X GET 'http://localhost:8080/heartbeat'
+.%
+```
 
-if you create a long running requests (say 50 seconds)
+## Liveness
+
+I like the idea of using a mock-service subcommand for this. I'll add it.:
+https://medium.com/over-engineering/graceful-shutdown-with-go-http-servers-and-kubernetes-rolling-updates-6697e7db17cf
