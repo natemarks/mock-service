@@ -1,5 +1,18 @@
 # mock-service
 
+The purpose of the mock service is to give devops the simplest possible service that is kubernetes ready so we can test deployment automation, logging etc.:
+ - It has liveness and readiness probes: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+ - It logs startup and graceful vs timeout shutdown
+ - It responds to simple request that waits for an arbitrary duration before finishing
+ - The service would be run in a container after the preflight check so we have a simple way of testing deploymen
+ 
+ 
+ # Usage
+ 
+ When I run the mock-service locally, it listens on port 8080 with a graceful shutdown timout htat is either the deafult or a parseable string in the environment variable 'SERVICE_GRACEFUL_SHUTDOWN_TIMEOUT'  example "5000ms".  Any string that is valid for ParseDuration works here (https://golang.org/pkg/time/#example_ParseDuration).
+ 
+ 
+ 
 The service should invoke a graceful shutdonw letting eerything finish when a sigterm is caught.  We play with this by killing he service with ctrl-c while tasls are running.  There is a hardcoded  shutdown timeout of 5 seconds :
 ```text
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)

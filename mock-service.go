@@ -42,7 +42,9 @@ func main() {
 	logger.SetLevel(log.InfoLevel)
 
 	// I tried to move this to init() but it doesn't work there
-	log.SetOutput(os.Stdout)
+	logger.SetOutput(os.Stdout)
+
+	logger.Info(fmt.Sprintf("SERVICE_GRACEFUL_SHUTDOWN_TIMEOUT is set to %s", grace))
 	router := gin.Default()
 	router.Use(ginlogrus.Logger(logger), gin.Recovery())
 	router.GET("/", func(c *gin.Context) {
@@ -62,7 +64,7 @@ func main() {
 	go func() {
 		// service connections
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("listen: %s\n", err)
+			logger.Fatal("listen: %s\n", err)
 		}
 	}()
 
@@ -74,13 +76,13 @@ func main() {
 	// kill -9 is syscall.SIGKILL but can't be catch, so don't need add it
 	signal.Notify(quit, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-	log.Println("Shutdown Server ...")
+	logger.Info("Shutdown Server ...")
 
 	ctx, cancel := context.WithTimeout(context.Background(), grace)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {
-		log.Fatal("Server Shutdown: ", err)
+		logger.Fatal("Server Shutdown: ", err)
 	}
 
-	log.Println("Server exiting")
+	logger.Info("Graceful shutdown complete")
 }
