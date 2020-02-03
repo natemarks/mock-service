@@ -45,6 +45,7 @@ func main() {
 	logger.SetOutput(os.Stdout)
 
 	logger.Info(fmt.Sprintf("SERVICE_GRACEFUL_SHUTDOWN_TIMEOUT is set to %s", grace))
+
 	router := gin.Default()
 	router.Use(ginlogrus.Logger(logger), gin.Recovery())
 	router.GET("/", func(c *gin.Context) {
@@ -52,18 +53,33 @@ func main() {
 		c.String(http.StatusOK, WaitResponse(fmt.Sprint(q["wait"][0])))
 	})
 
-	router.GET("/heartbeat", func(c *gin.Context) {
-		c.Data(200, "text/plain", []byte("."))
-	})
-
 	srv := &http.Server{
 		Addr:    ":8080",
 		Handler: router,
 	}
 
+	hb_router := gin.Default()
+	hb_router.Use(ginlogrus.Logger(logger), gin.Recovery())
+
+	hb_router.GET("/heartbeat", func(c *gin.Context) {
+		c.Data(200, "text/plain", []byte("."))
+	})
+
+	hb_srv := &http.Server{
+		Addr:    ":8786",
+		Handler: hb_router,
+	}
+
 	go func() {
 		// service connections
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			logger.Fatal("listen: %s\n", err)
+		}
+	}()
+
+	go func() {
+		// service connections
+		if err := hb_srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			logger.Fatal("listen: %s\n", err)
 		}
 	}()
@@ -81,6 +97,9 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), grace)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {
+		logger.Fatal("Server Shutdown: ", err)
+	}
+	if err := hb_srv.Shutdown(ctx); err != nil {
 		logger.Fatal("Server Shutdown: ", err)
 	}
 
