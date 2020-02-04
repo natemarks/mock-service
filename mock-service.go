@@ -45,7 +45,7 @@ func main() {
 
 	// I tried to move this to init() but it doesn't work there
 	logger.SetOutput(os.Stdout)
-	logger.Info(fmt.Sprintf("mokc-srvice version: %s is set to %s", version))
+	logger.Info(fmt.Sprintf("mock-service version: %s", version))
 	logger.Info(fmt.Sprintf("SERVICE_GRACEFUL_SHUTDOWN_TIMEOUT is set to %s", grace))
 
 	router := gin.Default()
