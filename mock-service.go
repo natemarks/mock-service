@@ -17,7 +17,7 @@ import (
 	gin "github.com/gin-gonic/gin"
 )
 
-const version string = "v0.0.1"
+const version string = "v0.0.2"
 
 func WaitResponse(w string) string {
 	if wait, err := time.ParseDuration(w); err == nil {
