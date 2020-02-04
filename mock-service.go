@@ -17,6 +17,8 @@ import (
 	gin "github.com/gin-gonic/gin"
 )
 
+const version string = "v0.0.1"
+
 func WaitResponse(w string) string {
 	if wait, err := time.ParseDuration(w); err == nil {
 		time.Sleep(wait)
@@ -43,7 +45,7 @@ func main() {
 
 	// I tried to move this to init() but it doesn't work there
 	logger.SetOutput(os.Stdout)
-
+	logger.Info(fmt.Sprintf("mokc-srvice version: %s is set to %s", version))
 	logger.Info(fmt.Sprintf("SERVICE_GRACEFUL_SHUTDOWN_TIMEOUT is set to %s", grace))
 
 	router := gin.Default()
