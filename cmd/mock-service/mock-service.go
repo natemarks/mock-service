@@ -6,26 +6,28 @@ package main
 import (
 	"context"
 	"fmt"
-	log "github.com/sirupsen/logrus"
-	"github.com/toorop/gin-logrus"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
+	log "github.com/sirupsen/logrus"
+	ginlogrus "github.com/toorop/gin-logrus"
+
 	gin "github.com/gin-gonic/gin"
 )
 
 const version string = "v0.0.3"
 
+// WaitResponse waits for a specified duration and returns a string
 func WaitResponse(w string) string {
 	if wait, err := time.ParseDuration(w); err == nil {
 		time.Sleep(wait)
 		return fmt.Sprintf("You waited for %s", w)
-	} else {
-		return "Invalid wait parameter example 500ms"
 	}
+	return "Invalid wait parameter example 500ms"
+
 }
 
 func main() {
@@ -60,29 +62,29 @@ func main() {
 		Handler: router,
 	}
 
-	hb_router := gin.Default()
-	hb_router.Use(ginlogrus.Logger(logger), gin.Recovery())
+	hbRouter := gin.Default()
+	hbRouter.Use(ginlogrus.Logger(logger), gin.Recovery())
 
-	hb_router.GET("/heartbeat", func(c *gin.Context) {
+	hbRouter.GET("/heartbeat", func(c *gin.Context) {
 		c.Data(200, "text/plain", []byte("."))
 	})
 
-	hb_srv := &http.Server{
+	hbSrv := &http.Server{
 		Addr:    ":8786",
-		Handler: hb_router,
+		Handler: hbRouter,
 	}
 
 	go func() {
 		// service connections
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			logger.Fatal("listen: %s\n", err)
+			logger.Fatal("app listener failed", err)
 		}
 	}()
 
 	go func() {
 		// service connections
-		if err := hb_srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			logger.Fatal("listen: %s\n", err)
+		if err := hbSrv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			logger.Fatal("heartbeat listener failed", err)
 		}
 	}()
 
@@ -101,7 +103,7 @@ func main() {
 	if err := srv.Shutdown(ctx); err != nil {
 		logger.Fatal("Server Shutdown: ", err)
 	}
-	if err := hb_srv.Shutdown(ctx); err != nil {
+	if err := hbSrv.Shutdown(ctx); err != nil {
 		logger.Fatal("Server Shutdown: ", err)
 	}
 

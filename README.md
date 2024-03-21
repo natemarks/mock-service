@@ -4,7 +4,6 @@ The purpose of the mock service is to give devops the simplest possible service 
  - It has liveness and readiness probes: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
  - It logs startup and graceful vs timeout shutdown
  - It responds to simple request that waits for an arbitrary duration before finishing
- - The service would be run in a container after the preflight check so we have a simple way of testing deploymen
  
  
  # Usage
