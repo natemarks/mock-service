@@ -69,3 +69,43 @@ curl -X GET 'http://localhost:8080/heartbeat'
 
 I like the idea of using a mock-service subcommand for this. I'll add it.:
 https://medium.com/over-engineering/graceful-shutdown-with-go-http-servers-and-kubernetes-rolling-updates-6697e7db17cf
+
+
+## Logging
+
+mock-service sends JSON logs to the console. An example document looks like this:
+```json
+{
+    "timestamp": "2024-05-13T11:49:47.398851689Z",
+    "level": "ERROR",
+    "message": "msg here",
+    "service": "httplog-example",
+    "httpRequest": {
+        "url": "http://aeauhjthkf.us-east-1.awsapprunner.com/err",
+        "method": "GET",
+        "path": "/err",
+        "remoteIP": "169.254.175.249:47282",
+        "proto": "HTTP/1.1",
+        "requestID": "8308f616-ded7-4ccc-89f9-73be375d7714",
+        "scheme": "http",
+        "header": {
+            "x-envoy-expected-rq-timeout-ms": "120000",
+            "accept-encoding": "gzip",
+            "user-agent": "curl/7.68.0",
+            "accept": "*/*",
+            "x-envoy-external-address": "73.114.80.122",
+            "x-forwarded-for": "73.114.80.122",
+            "x-forwarded-proto": "https",
+            "x-request-id": "8308f616-ded7-4ccc-89f9-73be375d7714"
+        }
+    },
+    "user": "user1",
+    "err": "err here"
+}
+```
+
+If these logs go to cloudwatch, you can query in cloudwatch logs insights for requests where the path = '/err' like this:
+```text
+fields @timestamp, @message
+| filter httpRequest.path='/err'
+```

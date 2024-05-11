@@ -1,0 +1,119 @@
+{
+    "Resources": {
+        "TestMockServiceARRoleF07B4971": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Statement": [
+                        {
+                            "Action": "sts:AssumeRole",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "build.apprunner.amazonaws.com"
+                            }
+                        }
+                    ],
+                    "Version": "2012-10-17"
+                }
+            }
+        },
+        "TestMockServiceARRoleDefaultPolicy1DED2AAA": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+                "PolicyDocument": {
+                    "Statement": [
+                        {
+                            "Action": [
+                                "ecr:GetDownloadUrlForLayer",
+                                "ecr:BatchCheckLayerAvailability",
+                                "ecr:BatchGetImage",
+                                "ecr:DescribeImages",
+                                "ecr:GetAuthorizationToken"
+                            ],
+                            "Effect": "Allow",
+                            "Resource": "*"
+                        }
+                    ],
+                    "Version": "2012-10-17"
+                },
+                "PolicyName": "TestMockServiceARRoleDefaultPolicy1DED2AAA",
+                "Roles": [
+                    {
+                        "Ref": "TestMockServiceARRoleF07B4971"
+                    }
+                ]
+            }
+        },
+        "TestMockService": {
+            "Type": "AWS::AppRunner::Service",
+            "Properties": {
+                "HealthCheckConfiguration": {
+                    "HealthyThreshold": 1,
+                    "Interval": 5,
+                    "Path": "/",
+                    "Protocol": "TCP",
+                    "Timeout": 2,
+                    "UnhealthyThreshold": 5
+                },
+                "ServiceName": "mock-service",
+                "SourceConfiguration": {
+                    "AuthenticationConfiguration": {
+                        "AccessRoleArn": {
+                            "Fn::GetAtt": [
+                                "TestMockServiceARRoleF07B4971",
+                                "Arn"
+                            ]
+                        }
+                    },
+                    "AutoDeploymentsEnabled": true,
+                    "ImageRepository": {
+                        "ImageConfiguration": {
+                            "RuntimeEnvironmentVariables": [
+                                {
+                                    "Name": "SERVICE_GRACEFUL_SHUTDOWN_TIMEOUT",
+                                    "Value": "20000ms"
+                                }
+                            ]
+                        },
+                        "ImageIdentifier": "709310380790.dkr.ecr.us-east-1.amazonaws.com/mock-service:latest",
+                        "ImageRepositoryType": "ECR"
+                    }
+                }
+            }
+        }
+    },
+    "Parameters": {
+        "BootstrapVersion": {
+            "Type": "AWS::SSM::Parameter::Value<String>",
+            "Default": "/cdk-bootstrap/hnb659fds/version",
+            "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+        }
+    },
+    "Rules": {
+        "CheckBootstrapVersion": {
+            "Assertions": [
+                {
+                    "Assert": {
+                        "Fn::Not": [
+                            {
+                                "Fn::Contains": [
+                                    [
+                                        "1",
+                                        "2",
+                                        "3",
+                                        "4",
+                                        "5"
+                                    ],
+                                    {
+                                        "Ref": "BootstrapVersion"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+                }
+            ]
+        }
+    }
+}
