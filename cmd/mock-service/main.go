@@ -100,33 +100,31 @@ func main() {
 	signal.Notify(stop, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
 	go func() {
-		logger.Info(fmt.Sprintf("starting server (%s) on port %d", version.Version, port))
-		logger.Info(fmt.Sprintf("SERVICE_GRACEFUL_SHUTDOWN_TIMEOUT is set to %s", grace))
+		// Block until a signal is received
+		sig := <-stop
+		logger.Info(fmt.Sprintf("Received signal: %s. Shutting down gracefully...", sig))
 
-		err = srv.ListenAndServe()
-		if err != nil {
-			if !errors.Is(http.ErrServerClosed, err) {
-				logger.Error("error starting server", "err", err)
-			} else {
-				logger.Info("server closed gracefully")
-			}
+		// Create a context with a timeout
+		ctx, cancel := context.WithTimeout(context.Background(), grace)
+		defer cancel()
+
+		// Shutdown the server
+		if err := srv.Shutdown(ctx); err != nil {
+			logger.Error(fmt.Sprintf("Server shutdown error: %v", err))
+		} else {
+			logger.Info("Server shutdown successful")
 		}
-
 	}()
 
-	// Block until a signal is received
-	sig := <-stop
-	logger.Info(fmt.Sprintf("Received signal: %s. Shutting down gracefully...", sig))
+	logger.Info(fmt.Sprintf("starting server (%s) on port %d", version.Version, port))
+	logger.Info(fmt.Sprintf("SERVICE_GRACEFUL_SHUTDOWN_TIMEOUT is set to %s", grace))
 
-	// Create a context with a timeout
-	ctx, cancel := context.WithTimeout(context.Background(), grace)
-	defer cancel()
-
-	// Shutdown the server
-	if err := srv.Shutdown(ctx); err != nil {
-		logger.Error(fmt.Sprintf("Server shutdown error: %v", err))
-	} else {
-		logger.Info("Server shutdown successful")
+	err = srv.ListenAndServe()
+	if err != nil {
+		if !errors.Is(http.ErrServerClosed, err) {
+			logger.Error("error starting server", "err", err)
+		} else {
+			logger.Info("server closed gracefully")
+		}
 	}
-
 }
