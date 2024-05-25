@@ -94,6 +94,11 @@ func main() {
 		Addr:    ":8080",
 		Handler: r,
 	}
+
+	// Listen for SIGINT signal
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, os.Interrupt, syscall.SIGINT)
+
 	go func() {
 		logger.Info(fmt.Sprintf("starting server (%s) on port %d", version.Version, port))
 		logger.Info(fmt.Sprintf("SERVICE_GRACEFUL_SHUTDOWN_TIMEOUT is set to %s", grace))
@@ -109,14 +114,9 @@ func main() {
 
 	}()
 
-	// Listen for SIGINT signal
-	stop := make(chan os.Signal, 1)
-	signal.Notify(stop, os.Interrupt, syscall.SIGINT)
-
 	// Block until a signal is received
-	<-stop
-
-	logger.Info("Received SIGINT signal. Shutting down gracefully...")
+	sig := <-stop
+	logger.Info(fmt.Sprintf("Received signal: %s. Shutting down gracefully...", sig))
 
 	// Create a context with a timeout
 	ctx, cancel := context.WithTimeout(context.Background(), grace)

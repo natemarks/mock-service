@@ -1,10 +1,22 @@
 # mock-service
 
-The purpose of the mock service is to give devops the simplest possible service that is kubernetes ready so we can test deployment automation, logging etc.:
- - It has liveness and readiness probes: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
- - It logs startup and graceful vs timeout shutdown
- - It responds to simple request that waits for an arbitrary duration before finishing
- 
+The purpose of the mock service is to test deployment methods. It includes the following handy features:
+ - a readiness http endpoint. This can also double as a liveness check. For more information about liveness and readiness checks, see https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+
+```bash
+curl -X GET 'http://localhost:8080/ping'
+.
+```
+ - it logs the invocation of a shutdown request AND the successful completion of a graceful shutdown. If the service is killed by a timeout the graceful shutdown success log message will be missing.
+ - the 'application' simple waits for teh requested period of time which helps testing graceful shutdown.  If I invoke a 2-minute wait then request a graceful shutdown , I expect to see the log for teh gracfeul shutdown request but NOT the graceful shutdown completion.
+
+```bash
+curl -X GET 'http://localhost:8080/?wait=3000ms'
+You waited for 3000ms
+```
+
+ - logging includes container information where available
+
  
  # Usage
  
