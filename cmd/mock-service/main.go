@@ -33,6 +33,10 @@ func WaitResponse(w string) (response string, err error) {
 
 func main() {
 
+	// Listen for SIGINT signal
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+
 	grace, err := time.ParseDuration(os.Getenv("SERVICE_GRACEFUL_SHUTDOWN_TIMEOUT"))
 	if err != nil {
 		grace, _ = time.ParseDuration("5000ms")
@@ -95,10 +99,6 @@ func main() {
 		Addr:    ":8080",
 		Handler: r,
 	}
-
-	// Listen for SIGINT signal
-	stop := make(chan os.Signal, 1)
-	signal.Notify(stop, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
 	go func() {
 		logger.Info(fmt.Sprintf("starting server (%s) on port %d", version.Version, port))
