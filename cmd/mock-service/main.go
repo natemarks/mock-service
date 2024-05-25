@@ -8,6 +8,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/httplog/v2"
 	"github.com/natemarks/mock-service/version"
+	"log"
 	"log/slog"
 	"net/http"
 	"os"
@@ -100,31 +101,26 @@ func main() {
 	signal.Notify(stop, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
 	go func() {
-		// Block until a signal is received
-		sig := <-stop
-		logger.Info(fmt.Sprintf("Received signal: %s. Shutting down gracefully...", sig))
+		logger.Info(fmt.Sprintf("starting server (%s) on port %d", version.Version, port))
+		logger.Info(fmt.Sprintf("SERVICE_GRACEFUL_SHUTDOWN_TIMEOUT is set to %s", grace))
 
-		// Create a context with a timeout
-		ctx, cancel := context.WithTimeout(context.Background(), grace)
-		defer cancel()
-
-		// Shutdown the server
-		if err := srv.Shutdown(ctx); err != nil {
-			logger.Error(fmt.Sprintf("Server shutdown error: %v", err))
-		} else {
-			logger.Info("Server shutdown successful")
+		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			log.Fatalf("Could not listen on :%d: %v\n", port, err)
 		}
 	}()
+	// Block until a signal is received
+	sig := <-stop
+	logger.Info(fmt.Sprintf("Received signal: %s. Shutting down gracefully...", sig))
 
-	logger.Info(fmt.Sprintf("starting server (%s) on port %d", version.Version, port))
-	logger.Info(fmt.Sprintf("SERVICE_GRACEFUL_SHUTDOWN_TIMEOUT is set to %s", grace))
+	// Create a context with a timeout
+	ctx, cancel := context.WithTimeout(context.Background(), grace)
+	defer cancel()
 
-	err = srv.ListenAndServe()
-	if err != nil {
-		if !errors.Is(http.ErrServerClosed, err) {
-			logger.Error("error starting server", "err", err)
-		} else {
-			logger.Info("server closed gracefully")
-		}
+	// Shutdown the server
+	if err := srv.Shutdown(ctx); err != nil {
+		logger.Error(fmt.Sprintf("Server shutdown error: %v", err))
+	} else {
+		logger.Info("Server shutdown successful")
 	}
+
 }
