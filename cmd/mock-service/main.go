@@ -97,7 +97,7 @@ func main() {
 
 	// Listen for SIGINT signal
 	stop := make(chan os.Signal, 1)
-	signal.Notify(stop, os.Interrupt, syscall.SIGINT)
+	signal.Notify(stop, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
 	go func() {
 		logger.Info(fmt.Sprintf("starting server (%s) on port %d", version.Version, port))
