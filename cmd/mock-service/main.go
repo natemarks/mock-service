@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	port = 8080
+	port = "8080"
 )
 
 // WaitResponse waits for a specified duration and returns a string
@@ -33,6 +33,7 @@ func WaitResponse(w string) (response string, err error) {
 
 func main() {
 
+	// Graceful shutdown timeout
 	grace, err := time.ParseDuration(os.Getenv("SERVICE_GRACEFUL_SHUTDOWN_TIMEOUT"))
 	if err != nil {
 		grace, _ = time.ParseDuration("5000ms")
@@ -58,19 +59,23 @@ func main() {
 		// SourceFieldName: "source",
 	})
 
-	// Service
+	// Configure Web Server
 	r := chi.NewRouter()
 	r.Use(httplog.RequestLogger(logger))
+
+	// curl -X GET 'http://localhost:8080/ping'
 	r.Use(middleware.Heartbeat("/ping"))
 
+	// Add a version field to the log entry
 	r.Use(func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx := r.Context()
-			httplog.LogEntrySetField(ctx, "user", slog.StringValue("user1"))
+			httplog.LogEntrySetField(ctx, "version", slog.StringValue(version.Version))
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	})
 
+	// curl -X GET 'http://localhost:8080/?wait=20000ms'
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		waitParam := r.URL.Query().Get("wait")
 		waitResponse, err := WaitResponse(waitParam)
@@ -82,6 +87,7 @@ func main() {
 		w.Write([]byte(waitResponse))
 	})
 
+	// curl -X GET 'http://localhost:8080/version
 	r.Get("/version", func(w http.ResponseWriter, r *http.Request) {
 		response := fmt.Sprintf("version: %s", version.Version)
 		oplog := httplog.LogEntry(r.Context())
@@ -92,22 +98,25 @@ func main() {
 
 	// Create a server with custom settings
 	srv := &http.Server{
-		Addr:    ":8080",
+		Addr:    fmt.Sprintf(":%s", port),
 		Handler: r,
 	}
 
 	// Listen for SIGINT signal
+	// NOTE: Dockerfile CMD MUST use the correct form of the command to send the SIGTERM to the process
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
+	// Start the server in a goroutine
 	go func() {
-		logger.Info(fmt.Sprintf("starting server (%s) on port %d", version.Version, port))
+		logger.Info(fmt.Sprintf("starting server (%s) on port %s", version.Version, port))
 		logger.Info(fmt.Sprintf("SERVICE_GRACEFUL_SHUTDOWN_TIMEOUT is set to %s", grace))
 
 		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Fatalf("Could not listen on :%d: %v\n", port, err)
+			log.Fatalf("Could not listen on :%s: %v\n", port, err)
 		}
 	}()
+
 	// Block until a signal is received
 	sig := <-stop
 	logger.Info(fmt.Sprintf("Received signal: %s. Shutting down gracefully...", sig))
