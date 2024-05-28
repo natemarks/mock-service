@@ -7,6 +7,7 @@ from constructs import Construct
 from aws_cdk import (
     Stack,
     aws_eks as eks,
+    aws_ecr as ecr,
 )
 
 
@@ -48,21 +49,31 @@ class MockServiceEKSStack(
             stack_cfg.prefix,
             version=eks.KubernetesVersion.V1_29,
         )
+        ecr_repository = ecr.Repository.from_repository_name(
+            self, f"{stack_cfg.prefix}Repo", "mock-service"
+        )
         # apply a kubernetes manifest to the cluster
         eks_cluster.add_manifest(
             f"{stack_cfg.prefix}Pod",
             {
-                "api_version": "v1",
-                "kind": "Pod",
-                "metadata": {"name": "mypod"},
+                "apiVersion": "apps/v1",
+                "kind": "Deployment",
+                "metadata": {"name": "mock-service"},
                 "spec": {
-                    "containers": [
-                        {
-                            "name": "hello",
-                            "image": "paulbouwer/hello-kubernetes:1.5",
-                            "ports": [{"container_port": 8080}],
-                        }
-                    ]
+                    "replicas": 2,
+                    "selector": {"matchLabels": {"app": "mock-service"}},
+                    "template": {
+                        "metadata": {"labels": {"app": "mock-service"}},
+                        "spec": {
+                            "containers": [
+                                {
+                                    "name": "mock-service",
+                                    "image": f"{ecr_repository.repository_uri}:latest",
+                                    "ports": [{"containerPort": 8080}],
+                                }
+                            ]
+                        },
+                    },
                 },
             },
         )

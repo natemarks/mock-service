@@ -1005,7 +1005,26 @@
                         "Outputs.mockserviceeksawscdkawseksKubectlProviderframeworkonEvent23CDAF83Arn"
                     ]
                 },
-                "Manifest": "[{\"api_version\":\"v1\",\"kind\":\"Pod\",\"metadata\":{\"name\":\"mypod\",\"labels\":{\"aws.cdk.eks/prune-c8f618d0ece6b301b9a5654639829290cf136c3fef\":\"\"}},\"spec\":{\"containers\":[{\"name\":\"hello\",\"image\":\"paulbouwer/hello-kubernetes:1.5\",\"ports\":[{\"container_port\":8080}]}]}}]",
+                "Manifest": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            "[{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"name\":\"mock-service\",\"labels\":{\"aws.cdk.eks/prune-c8f618d0ece6b301b9a5654639829290cf136c3fef\":\"\"}},\"spec\":{\"replicas\":2,\"selector\":{\"matchLabels\":{\"app\":\"mock-service\"}},\"template\":{\"metadata\":{\"labels\":{\"app\":\"mock-service\"}},\"spec\":{\"containers\":[{\"name\":\"mock-service\",\"image\":\"",
+                            {
+                                "Ref": "AWS::AccountId"
+                            },
+                            ".dkr.ecr.",
+                            {
+                                "Ref": "AWS::Region"
+                            },
+                            ".",
+                            {
+                                "Ref": "AWS::URLSuffix"
+                            },
+                            "/mock-service:latest\",\"ports\":[{\"containerPort\":8080}]}]}}}}]"
+                        ]
+                    ]
+                },
                 "ClusterName": {
                     "Ref": "EKSMockService4418E7E4"
                 },
