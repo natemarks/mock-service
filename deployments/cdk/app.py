@@ -5,6 +5,7 @@ import aws_cdk as cdk
 
 from stack.apprunner_stack import MockServiceAppRunnerStack, AR_STACK_CONFIG
 from stack.fargate_stack import MockServiceFargateStack, FG_STACK_CONFIG
+from stack.eks_stack import MockServiceEKSStack, EKS_STACK_CONFIG
 from stack.helper import (
     check_account_number,
 )
@@ -33,5 +34,15 @@ MockServiceFargateStack(
         region=FG_STACK_CONFIG.default_region,
     ),
     stack_cfg=FG_STACK_CONFIG,
+)
+
+MockServiceEKSStack(
+    app,
+    construct_id=EKS_STACK_CONFIG.construct_id,
+    env=cdk.Environment(
+        account=EKS_STACK_CONFIG.aws_account_number,
+        region=EKS_STACK_CONFIG.default_region,
+    ),
+    stack_cfg=EKS_STACK_CONFIG,
 )
 app.synth()
