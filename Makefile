@@ -261,7 +261,32 @@ cdk-destroy: node_modules ## run cdk ls
        python --version; \
        source .venv/bin/activate; \
        cd deployments/cdk ; \
-       $(CDK) destroy $(stack); \
+       $(CDK) destroy --all; \
+    )
+
+
+cdk-deploy-single: node_modules ## run cdk ls
+	# cdk executable usually: node_modules/aws-cdk/bin/cdk
+	# have to be evaluated after the node_modules target
+	( \
+       source scripts/enable_pyenv.sh; \
+       pyenv local $(PYTHON_VERSION); \
+       python --version; \
+       source .venv/bin/activate; \
+       cd deployments/cdk ; \
+       $(CDK) deploy $(STACK); \
+    )
+
+cdk-destroy-single: node_modules ## run cdk ls
+	# cdk executable usually: node_modules/aws-cdk/bin/cdk
+	# have to be evaluated after the node_modules target
+	( \
+       source scripts/enable_pyenv.sh; \
+       pyenv local $(PYTHON_VERSION); \
+       python --version; \
+       source .venv/bin/activate; \
+       cd deployments/cdk ; \
+       $(CDK) destroy $(STACK); \
     )
 
 
