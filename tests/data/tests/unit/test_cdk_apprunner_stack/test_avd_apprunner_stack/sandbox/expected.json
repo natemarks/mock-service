@@ -1,6 +1,6 @@
 {
     "Resources": {
-        "TestMockServiceARRoleF07B4971": {
+        "MockServiceAppRunnerRole8D5AD526": {
             "Type": "AWS::IAM::Role",
             "Properties": {
                 "AssumeRolePolicyDocument": {
@@ -17,7 +17,7 @@
                 }
             }
         },
-        "TestMockServiceARRoleDefaultPolicy1DED2AAA": {
+        "MockServiceAppRunnerRoleDefaultPolicyE2D7F97E": {
             "Type": "AWS::IAM::Policy",
             "Properties": {
                 "PolicyDocument": {
@@ -36,22 +36,22 @@
                     ],
                     "Version": "2012-10-17"
                 },
-                "PolicyName": "TestMockServiceARRoleDefaultPolicy1DED2AAA",
+                "PolicyName": "MockServiceAppRunnerRoleDefaultPolicyE2D7F97E",
                 "Roles": [
                     {
-                        "Ref": "TestMockServiceARRoleF07B4971"
+                        "Ref": "MockServiceAppRunnerRole8D5AD526"
                     }
                 ]
             }
         },
-        "TestMockService": {
+        "MockService": {
             "Type": "AWS::AppRunner::Service",
             "Properties": {
                 "HealthCheckConfiguration": {
                     "HealthyThreshold": 1,
                     "Interval": 5,
-                    "Path": "/",
-                    "Protocol": "TCP",
+                    "Path": "/ping",
+                    "Protocol": "HTTP",
                     "Timeout": 2,
                     "UnhealthyThreshold": 5
                 },
@@ -60,7 +60,7 @@
                     "AuthenticationConfiguration": {
                         "AccessRoleArn": {
                             "Fn::GetAtt": [
-                                "TestMockServiceARRoleF07B4971",
+                                "MockServiceAppRunnerRole8D5AD526",
                                 "Arn"
                             ]
                         }

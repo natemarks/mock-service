@@ -3,35 +3,25 @@
 
 import aws_cdk as cdk
 
-from stack.apprunner_stack import MockServiceAppRunnerStack
+from stack.apprunner_stack import MockServiceAppRunnerStack, AR_STACK_CONFIG
 from stack.helper import (
-    StackConfig,
     check_account_number,
 )
 
 app = cdk.App()
 
+check_account_number(AR_STACK_CONFIG.aws_account_number)
 
-sc = StackConfig(
-    construct_id="test-mock-service",
-    aws_account_number="709310380790",
-    default_region="us-east-1",
-    image_tag="latest",
-)
-check_account_number(sc.aws_account_number)
-
-# set the cdk_environment
-cdk_env = cdk.Environment(
-    account=sc.aws_account_number,
-    region=sc.default_region,
-)
 cdk.Tags.of(app).add("iac", "gh:natemarks/mock-service")
 
 MockServiceAppRunnerStack(
     app,
-    construct_id=sc.construct_id,
-    env=cdk_env,
-    stack_cfg=sc,
+    construct_id=AR_STACK_CONFIG.construct_id,
+    env=cdk.Environment(
+        account=AR_STACK_CONFIG.aws_account_number,
+        region=AR_STACK_CONFIG.default_region,
+    ),
+    stack_cfg=AR_STACK_CONFIG,
 )
 
 app.synth()

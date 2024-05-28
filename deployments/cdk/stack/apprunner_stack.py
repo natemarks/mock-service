@@ -1,12 +1,33 @@
 # pylint: disable=line-too-long
 """ stack module"""
+from dataclasses import dataclass
 from constructs import Construct
 from aws_cdk import (
     Stack,
     aws_iam as iam,
     aws_apprunner as apprunner,
 )
-from .helper import StackConfig
+from .helper import ecr_image
+
+
+@dataclass
+class AppRunnerStackConfig:
+    """AppRunnerStackConfig class"""
+
+    prefix: str
+    construct_id: str
+    aws_account_number: str
+    default_region: str
+    image_tag: str
+
+
+AR_STACK_CONFIG = AppRunnerStackConfig(
+    prefix="MockService",
+    construct_id="test-mock-service",
+    aws_account_number="709310380790",
+    default_region="us-east-1",
+    image_tag="latest",
+)
 
 
 class MockServiceAppRunnerStack(Stack):
@@ -16,14 +37,14 @@ class MockServiceAppRunnerStack(Stack):
         self,
         scope: Construct,
         construct_id: str,
-        stack_cfg: StackConfig,
+        stack_cfg: AppRunnerStackConfig,
         **kwargs,
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
         self.stack_cfg = stack_cfg
         app_runner_role = iam.Role(
             self,
-            "TestMockServiceARRole",
+            f"{stack_cfg.prefix}AppRunnerRole",
             assumed_by=iam.ServicePrincipal("build.apprunner.amazonaws.com"),
         )
         app_runner_role.add_to_policy(
@@ -40,7 +61,7 @@ class MockServiceAppRunnerStack(Stack):
         )
         apprunner.CfnService(
             self,
-            "TestMockService",
+            stack_cfg.prefix,
             service_name="mock-service",
             source_configuration=apprunner.CfnService.SourceConfigurationProperty(
                 authentication_configuration=apprunner.CfnService.AuthenticationConfigurationProperty(
@@ -48,8 +69,11 @@ class MockServiceAppRunnerStack(Stack):
                 ),
                 auto_deployments_enabled=True,
                 image_repository=apprunner.CfnService.ImageRepositoryProperty(
-                    image_identifier="709310380790.dkr.ecr.us-east-1.amazonaws.com/"
-                    f"mock-service:{stack_cfg.image_tag}",
+                    image_identifier=ecr_image(
+                        stack_cfg.aws_account_number,
+                        stack_cfg.default_region,
+                        stack_cfg.image_tag,
+                    ),
                     image_repository_type="ECR",
                     # the properties below are optional
                     image_configuration=apprunner.CfnService.ImageConfigurationProperty(
@@ -76,8 +100,8 @@ class MockServiceAppRunnerStack(Stack):
             health_check_configuration=apprunner.CfnService.HealthCheckConfigurationProperty(
                 healthy_threshold=1,  # default: 1
                 interval=5,  # default: 5
-                path="/",  # default: /
-                protocol="TCP",  # default: TCP
+                path="/ping",  # default: /
+                protocol="HTTP",  # default: TCP
                 timeout=2,  # default: 2
                 unhealthy_threshold=5,  # default: 5
             ),

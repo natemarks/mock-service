@@ -7,14 +7,9 @@
 import pytest
 from aws_cdk import App, assertions
 from tests.helper import Case
-from deployments.cdk.stack.apprunner_stack import MockServiceAppRunnerStack
-from deployments.cdk.stack.helper import StackConfig
-
-SC = StackConfig(
-    construct_id="test-mock-service",
-    aws_account_number="709310380790",
-    default_region="us-east-1",
-    image_tag="latest",
+from deployments.cdk.stack.apprunner_stack import (
+    MockServiceAppRunnerStack,
+    AR_STACK_CONFIG,
 )
 
 
@@ -31,8 +26,8 @@ def test_avd_apprunner_stack(request, update_golden):
     app = App()
     stk = MockServiceAppRunnerStack(
         app,
-        construct_id=SC.construct_id,
-        stack_cfg=SC,
+        construct_id=AR_STACK_CONFIG.construct_id,
+        stack_cfg=AR_STACK_CONFIG,
     )
 
     template = assertions.Template.from_stack(stk)

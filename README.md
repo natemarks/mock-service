@@ -103,3 +103,14 @@ If these logs go to cloudwatch, you can query in cloudwatch logs insights for re
 fields @timestamp, @message
 | filter httpRequest.path='/ping'
 ```
+
+
+## App Runner deployment
+
+Cloudwatch log insights query for /ping requests
+```text
+fields @timestamp, @message, @logStream, @log
+| filter httpRequest.path="/ping"
+| sort @timestamp desc
+| limit 100
+```

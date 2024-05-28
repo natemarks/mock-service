@@ -4,19 +4,8 @@
 
 """
 
-from dataclasses import dataclass
 
 import boto3
-
-
-@dataclass
-class StackConfig:
-    """StackConfig class"""
-
-    construct_id: str
-    aws_account_number: str
-    default_region: str
-    image_tag: str
 
 
 def check_account_number(expected_account_number: str):
@@ -28,3 +17,8 @@ def check_account_number(expected_account_number: str):
             f"Unexpected AWS account number. Expected: {expected_account_number}, "
             f"Got: {response['Account']}"
         )
+
+
+def ecr_image(aws_account_number: str, region: str, image_tag: str):
+    """return the ECR image"""
+    return f"{aws_account_number}.dkr.ecr.{region}.amazonaws.com/mock-service:{image_tag}"
