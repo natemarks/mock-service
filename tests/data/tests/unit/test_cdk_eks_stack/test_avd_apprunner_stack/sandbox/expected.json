@@ -1,0 +1,1153 @@
+{
+    "Resources": {
+        "EKSMockServiceDefaultVpc0FCE91F5": {
+            "Type": "AWS::EC2::VPC",
+            "Properties": {
+                "CidrBlock": "10.0.0.0/16",
+                "EnableDnsHostnames": true,
+                "EnableDnsSupport": true,
+                "InstanceTenancy": "default",
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "mock-service-eks/EKSMockService/DefaultVpc"
+                    }
+                ]
+            }
+        },
+        "EKSMockServiceDefaultVpcPublicSubnet1SubnetDF2BFC27": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "AvailabilityZone": {
+                    "Fn::Select": [
+                        0,
+                        {
+                            "Fn::GetAZs": ""
+                        }
+                    ]
+                },
+                "CidrBlock": "10.0.0.0/18",
+                "MapPublicIpOnLaunch": true,
+                "Tags": [
+                    {
+                        "Key": "aws-cdk:subnet-name",
+                        "Value": "Public"
+                    },
+                    {
+                        "Key": "aws-cdk:subnet-type",
+                        "Value": "Public"
+                    },
+                    {
+                        "Key": "kubernetes.io/role/elb",
+                        "Value": "1"
+                    },
+                    {
+                        "Key": "Name",
+                        "Value": "mock-service-eks/EKSMockService/DefaultVpc/PublicSubnet1"
+                    }
+                ],
+                "VpcId": {
+                    "Ref": "EKSMockServiceDefaultVpc0FCE91F5"
+                }
+            }
+        },
+        "EKSMockServiceDefaultVpcPublicSubnet1RouteTable46BF0165": {
+            "Type": "AWS::EC2::RouteTable",
+            "Properties": {
+                "Tags": [
+                    {
+                        "Key": "kubernetes.io/role/elb",
+                        "Value": "1"
+                    },
+                    {
+                        "Key": "Name",
+                        "Value": "mock-service-eks/EKSMockService/DefaultVpc/PublicSubnet1"
+                    }
+                ],
+                "VpcId": {
+                    "Ref": "EKSMockServiceDefaultVpc0FCE91F5"
+                }
+            }
+        },
+        "EKSMockServiceDefaultVpcPublicSubnet1RouteTableAssociation259FCF73": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "EKSMockServiceDefaultVpcPublicSubnet1RouteTable46BF0165"
+                },
+                "SubnetId": {
+                    "Ref": "EKSMockServiceDefaultVpcPublicSubnet1SubnetDF2BFC27"
+                }
+            }
+        },
+        "EKSMockServiceDefaultVpcPublicSubnet1DefaultRoute07E8C3D1": {
+            "Type": "AWS::EC2::Route",
+            "Properties": {
+                "DestinationCidrBlock": "0.0.0.0/0",
+                "GatewayId": {
+                    "Ref": "EKSMockServiceDefaultVpcIGW0964E66B"
+                },
+                "RouteTableId": {
+                    "Ref": "EKSMockServiceDefaultVpcPublicSubnet1RouteTable46BF0165"
+                }
+            },
+            "DependsOn": [
+                "EKSMockServiceDefaultVpcVPCGWD942D05F"
+            ]
+        },
+        "EKSMockServiceDefaultVpcPublicSubnet1EIP967DC0BA": {
+            "Type": "AWS::EC2::EIP",
+            "Properties": {
+                "Domain": "vpc",
+                "Tags": [
+                    {
+                        "Key": "kubernetes.io/role/elb",
+                        "Value": "1"
+                    },
+                    {
+                        "Key": "Name",
+                        "Value": "mock-service-eks/EKSMockService/DefaultVpc/PublicSubnet1"
+                    }
+                ]
+            }
+        },
+        "EKSMockServiceDefaultVpcPublicSubnet1NATGatewayB7D81C32": {
+            "Type": "AWS::EC2::NatGateway",
+            "Properties": {
+                "AllocationId": {
+                    "Fn::GetAtt": [
+                        "EKSMockServiceDefaultVpcPublicSubnet1EIP967DC0BA",
+                        "AllocationId"
+                    ]
+                },
+                "SubnetId": {
+                    "Ref": "EKSMockServiceDefaultVpcPublicSubnet1SubnetDF2BFC27"
+                },
+                "Tags": [
+                    {
+                        "Key": "kubernetes.io/role/elb",
+                        "Value": "1"
+                    },
+                    {
+                        "Key": "Name",
+                        "Value": "mock-service-eks/EKSMockService/DefaultVpc/PublicSubnet1"
+                    }
+                ]
+            },
+            "DependsOn": [
+                "EKSMockServiceDefaultVpcPublicSubnet1DefaultRoute07E8C3D1",
+                "EKSMockServiceDefaultVpcPublicSubnet1RouteTableAssociation259FCF73"
+            ]
+        },
+        "EKSMockServiceDefaultVpcPublicSubnet2Subnet0FD16B2B": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "AvailabilityZone": {
+                    "Fn::Select": [
+                        1,
+                        {
+                            "Fn::GetAZs": ""
+                        }
+                    ]
+                },
+                "CidrBlock": "10.0.64.0/18",
+                "MapPublicIpOnLaunch": true,
+                "Tags": [
+                    {
+                        "Key": "aws-cdk:subnet-name",
+                        "Value": "Public"
+                    },
+                    {
+                        "Key": "aws-cdk:subnet-type",
+                        "Value": "Public"
+                    },
+                    {
+                        "Key": "kubernetes.io/role/elb",
+                        "Value": "1"
+                    },
+                    {
+                        "Key": "Name",
+                        "Value": "mock-service-eks/EKSMockService/DefaultVpc/PublicSubnet2"
+                    }
+                ],
+                "VpcId": {
+                    "Ref": "EKSMockServiceDefaultVpc0FCE91F5"
+                }
+            }
+        },
+        "EKSMockServiceDefaultVpcPublicSubnet2RouteTableDD0CB433": {
+            "Type": "AWS::EC2::RouteTable",
+            "Properties": {
+                "Tags": [
+                    {
+                        "Key": "kubernetes.io/role/elb",
+                        "Value": "1"
+                    },
+                    {
+                        "Key": "Name",
+                        "Value": "mock-service-eks/EKSMockService/DefaultVpc/PublicSubnet2"
+                    }
+                ],
+                "VpcId": {
+                    "Ref": "EKSMockServiceDefaultVpc0FCE91F5"
+                }
+            }
+        },
+        "EKSMockServiceDefaultVpcPublicSubnet2RouteTableAssociationADDD759F": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "EKSMockServiceDefaultVpcPublicSubnet2RouteTableDD0CB433"
+                },
+                "SubnetId": {
+                    "Ref": "EKSMockServiceDefaultVpcPublicSubnet2Subnet0FD16B2B"
+                }
+            }
+        },
+        "EKSMockServiceDefaultVpcPublicSubnet2DefaultRouteE6C98A16": {
+            "Type": "AWS::EC2::Route",
+            "Properties": {
+                "DestinationCidrBlock": "0.0.0.0/0",
+                "GatewayId": {
+                    "Ref": "EKSMockServiceDefaultVpcIGW0964E66B"
+                },
+                "RouteTableId": {
+                    "Ref": "EKSMockServiceDefaultVpcPublicSubnet2RouteTableDD0CB433"
+                }
+            },
+            "DependsOn": [
+                "EKSMockServiceDefaultVpcVPCGWD942D05F"
+            ]
+        },
+        "EKSMockServiceDefaultVpcPublicSubnet2EIP3573258C": {
+            "Type": "AWS::EC2::EIP",
+            "Properties": {
+                "Domain": "vpc",
+                "Tags": [
+                    {
+                        "Key": "kubernetes.io/role/elb",
+                        "Value": "1"
+                    },
+                    {
+                        "Key": "Name",
+                        "Value": "mock-service-eks/EKSMockService/DefaultVpc/PublicSubnet2"
+                    }
+                ]
+            }
+        },
+        "EKSMockServiceDefaultVpcPublicSubnet2NATGateway93554327": {
+            "Type": "AWS::EC2::NatGateway",
+            "Properties": {
+                "AllocationId": {
+                    "Fn::GetAtt": [
+                        "EKSMockServiceDefaultVpcPublicSubnet2EIP3573258C",
+                        "AllocationId"
+                    ]
+                },
+                "SubnetId": {
+                    "Ref": "EKSMockServiceDefaultVpcPublicSubnet2Subnet0FD16B2B"
+                },
+                "Tags": [
+                    {
+                        "Key": "kubernetes.io/role/elb",
+                        "Value": "1"
+                    },
+                    {
+                        "Key": "Name",
+                        "Value": "mock-service-eks/EKSMockService/DefaultVpc/PublicSubnet2"
+                    }
+                ]
+            },
+            "DependsOn": [
+                "EKSMockServiceDefaultVpcPublicSubnet2DefaultRouteE6C98A16",
+                "EKSMockServiceDefaultVpcPublicSubnet2RouteTableAssociationADDD759F"
+            ]
+        },
+        "EKSMockServiceDefaultVpcPrivateSubnet1SubnetE64A1A8D": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "AvailabilityZone": {
+                    "Fn::Select": [
+                        0,
+                        {
+                            "Fn::GetAZs": ""
+                        }
+                    ]
+                },
+                "CidrBlock": "10.0.128.0/18",
+                "MapPublicIpOnLaunch": false,
+                "Tags": [
+                    {
+                        "Key": "aws-cdk:subnet-name",
+                        "Value": "Private"
+                    },
+                    {
+                        "Key": "aws-cdk:subnet-type",
+                        "Value": "Private"
+                    },
+                    {
+                        "Key": "kubernetes.io/role/internal-elb",
+                        "Value": "1"
+                    },
+                    {
+                        "Key": "Name",
+                        "Value": "mock-service-eks/EKSMockService/DefaultVpc/PrivateSubnet1"
+                    }
+                ],
+                "VpcId": {
+                    "Ref": "EKSMockServiceDefaultVpc0FCE91F5"
+                }
+            }
+        },
+        "EKSMockServiceDefaultVpcPrivateSubnet1RouteTable8DCA82E9": {
+            "Type": "AWS::EC2::RouteTable",
+            "Properties": {
+                "Tags": [
+                    {
+                        "Key": "kubernetes.io/role/internal-elb",
+                        "Value": "1"
+                    },
+                    {
+                        "Key": "Name",
+                        "Value": "mock-service-eks/EKSMockService/DefaultVpc/PrivateSubnet1"
+                    }
+                ],
+                "VpcId": {
+                    "Ref": "EKSMockServiceDefaultVpc0FCE91F5"
+                }
+            }
+        },
+        "EKSMockServiceDefaultVpcPrivateSubnet1RouteTableAssociationC904ACF3": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "EKSMockServiceDefaultVpcPrivateSubnet1RouteTable8DCA82E9"
+                },
+                "SubnetId": {
+                    "Ref": "EKSMockServiceDefaultVpcPrivateSubnet1SubnetE64A1A8D"
+                }
+            }
+        },
+        "EKSMockServiceDefaultVpcPrivateSubnet1DefaultRouteB5573011": {
+            "Type": "AWS::EC2::Route",
+            "Properties": {
+                "DestinationCidrBlock": "0.0.0.0/0",
+                "NatGatewayId": {
+                    "Ref": "EKSMockServiceDefaultVpcPublicSubnet1NATGatewayB7D81C32"
+                },
+                "RouteTableId": {
+                    "Ref": "EKSMockServiceDefaultVpcPrivateSubnet1RouteTable8DCA82E9"
+                }
+            }
+        },
+        "EKSMockServiceDefaultVpcPrivateSubnet2Subnet9E8CC115": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "AvailabilityZone": {
+                    "Fn::Select": [
+                        1,
+                        {
+                            "Fn::GetAZs": ""
+                        }
+                    ]
+                },
+                "CidrBlock": "10.0.192.0/18",
+                "MapPublicIpOnLaunch": false,
+                "Tags": [
+                    {
+                        "Key": "aws-cdk:subnet-name",
+                        "Value": "Private"
+                    },
+                    {
+                        "Key": "aws-cdk:subnet-type",
+                        "Value": "Private"
+                    },
+                    {
+                        "Key": "kubernetes.io/role/internal-elb",
+                        "Value": "1"
+                    },
+                    {
+                        "Key": "Name",
+                        "Value": "mock-service-eks/EKSMockService/DefaultVpc/PrivateSubnet2"
+                    }
+                ],
+                "VpcId": {
+                    "Ref": "EKSMockServiceDefaultVpc0FCE91F5"
+                }
+            }
+        },
+        "EKSMockServiceDefaultVpcPrivateSubnet2RouteTable4E1B422F": {
+            "Type": "AWS::EC2::RouteTable",
+            "Properties": {
+                "Tags": [
+                    {
+                        "Key": "kubernetes.io/role/internal-elb",
+                        "Value": "1"
+                    },
+                    {
+                        "Key": "Name",
+                        "Value": "mock-service-eks/EKSMockService/DefaultVpc/PrivateSubnet2"
+                    }
+                ],
+                "VpcId": {
+                    "Ref": "EKSMockServiceDefaultVpc0FCE91F5"
+                }
+            }
+        },
+        "EKSMockServiceDefaultVpcPrivateSubnet2RouteTableAssociationF8F60261": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "EKSMockServiceDefaultVpcPrivateSubnet2RouteTable4E1B422F"
+                },
+                "SubnetId": {
+                    "Ref": "EKSMockServiceDefaultVpcPrivateSubnet2Subnet9E8CC115"
+                }
+            }
+        },
+        "EKSMockServiceDefaultVpcPrivateSubnet2DefaultRoute37B9EECA": {
+            "Type": "AWS::EC2::Route",
+            "Properties": {
+                "DestinationCidrBlock": "0.0.0.0/0",
+                "NatGatewayId": {
+                    "Ref": "EKSMockServiceDefaultVpcPublicSubnet2NATGateway93554327"
+                },
+                "RouteTableId": {
+                    "Ref": "EKSMockServiceDefaultVpcPrivateSubnet2RouteTable4E1B422F"
+                }
+            }
+        },
+        "EKSMockServiceDefaultVpcIGW0964E66B": {
+            "Type": "AWS::EC2::InternetGateway",
+            "Properties": {
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "mock-service-eks/EKSMockService/DefaultVpc"
+                    }
+                ]
+            }
+        },
+        "EKSMockServiceDefaultVpcVPCGWD942D05F": {
+            "Type": "AWS::EC2::VPCGatewayAttachment",
+            "Properties": {
+                "InternetGatewayId": {
+                    "Ref": "EKSMockServiceDefaultVpcIGW0964E66B"
+                },
+                "VpcId": {
+                    "Ref": "EKSMockServiceDefaultVpc0FCE91F5"
+                }
+            }
+        },
+        "EKSMockServiceKubectlHandlerRole90EFF8AC": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Statement": [
+                        {
+                            "Action": "sts:AssumeRole",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                            }
+                        }
+                    ],
+                    "Version": "2012-10-17"
+                },
+                "ManagedPolicyArns": [
+                    {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "arn:",
+                                {
+                                    "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                            ]
+                        ]
+                    },
+                    {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "arn:",
+                                {
+                                    "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+                            ]
+                        ]
+                    },
+                    {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "arn:",
+                                {
+                                    "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+                            ]
+                        ]
+                    },
+                    {
+                        "Fn::If": [
+                            "EKSMockServiceHasEcrPublic8A77ADDA",
+                            {
+                                "Fn::Join": [
+                                    "",
+                                    [
+                                        "arn:",
+                                        {
+                                            "Ref": "AWS::Partition"
+                                        },
+                                        ":iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly"
+                                    ]
+                                ]
+                            },
+                            {
+                                "Ref": "AWS::NoValue"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        "EKSMockServiceKubectlHandlerRoleDefaultPolicyE2896594": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+                "PolicyDocument": {
+                    "Statement": [
+                        {
+                            "Action": "eks:DescribeCluster",
+                            "Effect": "Allow",
+                            "Resource": {
+                                "Fn::GetAtt": [
+                                    "EKSMockService4418E7E4",
+                                    "Arn"
+                                ]
+                            }
+                        },
+                        {
+                            "Action": "sts:AssumeRole",
+                            "Effect": "Allow",
+                            "Resource": {
+                                "Fn::GetAtt": [
+                                    "EKSMockServiceCreationRoleF10BB27D",
+                                    "Arn"
+                                ]
+                            }
+                        }
+                    ],
+                    "Version": "2012-10-17"
+                },
+                "PolicyName": "EKSMockServiceKubectlHandlerRoleDefaultPolicyE2896594",
+                "Roles": [
+                    {
+                        "Ref": "EKSMockServiceKubectlHandlerRole90EFF8AC"
+                    }
+                ]
+            }
+        },
+        "EKSMockServiceRoleCC01075A": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Statement": [
+                        {
+                            "Action": "sts:AssumeRole",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "eks.amazonaws.com"
+                            }
+                        }
+                    ],
+                    "Version": "2012-10-17"
+                },
+                "ManagedPolicyArns": [
+                    {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "arn:",
+                                {
+                                    "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/AmazonEKSClusterPolicy"
+                            ]
+                        ]
+                    }
+                ]
+            }
+        },
+        "EKSMockServiceControlPlaneSecurityGroup5A5CAE99": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "EKS Control Plane Security Group",
+                "SecurityGroupEgress": [
+                    {
+                        "CidrIp": "0.0.0.0/0",
+                        "Description": "Allow all outbound traffic by default",
+                        "IpProtocol": "-1"
+                    }
+                ],
+                "VpcId": {
+                    "Ref": "EKSMockServiceDefaultVpc0FCE91F5"
+                }
+            }
+        },
+        "EKSMockServiceCreationRoleF10BB27D": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Statement": [
+                        {
+                            "Action": "sts:AssumeRole",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "AWS": {
+                                    "Fn::GetAtt": [
+                                        "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
+                                        "Outputs.mockserviceeksawscdkawseksClusterResourceProviderOnEventHandlerServiceRoleB31AB2FEArn"
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "Action": "sts:AssumeRole",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "AWS": {
+                                    "Fn::GetAtt": [
+                                        "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
+                                        "Outputs.mockserviceeksawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole1B662BF7Arn"
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "Action": "sts:AssumeRole",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "AWS": {
+                                    "Fn::GetAtt": [
+                                        "EKSMockServiceKubectlHandlerRole90EFF8AC",
+                                        "Arn"
+                                    ]
+                                }
+                            }
+                        }
+                    ],
+                    "Version": "2012-10-17"
+                }
+            },
+            "DependsOn": [
+                "EKSMockServiceDefaultVpcIGW0964E66B",
+                "EKSMockServiceDefaultVpcPrivateSubnet1DefaultRouteB5573011",
+                "EKSMockServiceDefaultVpcPrivateSubnet1RouteTable8DCA82E9",
+                "EKSMockServiceDefaultVpcPrivateSubnet1RouteTableAssociationC904ACF3",
+                "EKSMockServiceDefaultVpcPrivateSubnet1SubnetE64A1A8D",
+                "EKSMockServiceDefaultVpcPrivateSubnet2DefaultRoute37B9EECA",
+                "EKSMockServiceDefaultVpcPrivateSubnet2RouteTable4E1B422F",
+                "EKSMockServiceDefaultVpcPrivateSubnet2RouteTableAssociationF8F60261",
+                "EKSMockServiceDefaultVpcPrivateSubnet2Subnet9E8CC115",
+                "EKSMockServiceDefaultVpcPublicSubnet1DefaultRoute07E8C3D1",
+                "EKSMockServiceDefaultVpcPublicSubnet1EIP967DC0BA",
+                "EKSMockServiceDefaultVpcPublicSubnet1NATGatewayB7D81C32",
+                "EKSMockServiceDefaultVpcPublicSubnet1RouteTable46BF0165",
+                "EKSMockServiceDefaultVpcPublicSubnet1RouteTableAssociation259FCF73",
+                "EKSMockServiceDefaultVpcPublicSubnet1SubnetDF2BFC27",
+                "EKSMockServiceDefaultVpcPublicSubnet2DefaultRouteE6C98A16",
+                "EKSMockServiceDefaultVpcPublicSubnet2EIP3573258C",
+                "EKSMockServiceDefaultVpcPublicSubnet2NATGateway93554327",
+                "EKSMockServiceDefaultVpcPublicSubnet2RouteTableDD0CB433",
+                "EKSMockServiceDefaultVpcPublicSubnet2RouteTableAssociationADDD759F",
+                "EKSMockServiceDefaultVpcPublicSubnet2Subnet0FD16B2B",
+                "EKSMockServiceDefaultVpc0FCE91F5",
+                "EKSMockServiceDefaultVpcVPCGWD942D05F"
+            ]
+        },
+        "EKSMockServiceCreationRoleDefaultPolicy80175C4C": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+                "PolicyDocument": {
+                    "Statement": [
+                        {
+                            "Action": "iam:PassRole",
+                            "Effect": "Allow",
+                            "Resource": {
+                                "Fn::GetAtt": [
+                                    "EKSMockServiceRoleCC01075A",
+                                    "Arn"
+                                ]
+                            }
+                        },
+                        {
+                            "Action": [
+                                "eks:CreateCluster",
+                                "eks:DescribeCluster",
+                                "eks:DescribeUpdate",
+                                "eks:DeleteCluster",
+                                "eks:UpdateClusterVersion",
+                                "eks:UpdateClusterConfig",
+                                "eks:CreateFargateProfile",
+                                "eks:TagResource",
+                                "eks:UntagResource"
+                            ],
+                            "Effect": "Allow",
+                            "Resource": [
+                                "*"
+                            ]
+                        },
+                        {
+                            "Action": [
+                                "eks:DescribeFargateProfile",
+                                "eks:DeleteFargateProfile"
+                            ],
+                            "Effect": "Allow",
+                            "Resource": "*"
+                        },
+                        {
+                            "Action": [
+                                "iam:GetRole",
+                                "iam:listAttachedRolePolicies"
+                            ],
+                            "Effect": "Allow",
+                            "Resource": "*"
+                        },
+                        {
+                            "Action": "iam:CreateServiceLinkedRole",
+                            "Effect": "Allow",
+                            "Resource": "*"
+                        },
+                        {
+                            "Action": [
+                                "ec2:DescribeInstances",
+                                "ec2:DescribeNetworkInterfaces",
+                                "ec2:DescribeSecurityGroups",
+                                "ec2:DescribeSubnets",
+                                "ec2:DescribeRouteTables",
+                                "ec2:DescribeDhcpOptions",
+                                "ec2:DescribeVpcs"
+                            ],
+                            "Effect": "Allow",
+                            "Resource": "*"
+                        }
+                    ],
+                    "Version": "2012-10-17"
+                },
+                "PolicyName": "EKSMockServiceCreationRoleDefaultPolicy80175C4C",
+                "Roles": [
+                    {
+                        "Ref": "EKSMockServiceCreationRoleF10BB27D"
+                    }
+                ]
+            },
+            "DependsOn": [
+                "EKSMockServiceDefaultVpcIGW0964E66B",
+                "EKSMockServiceDefaultVpcPrivateSubnet1DefaultRouteB5573011",
+                "EKSMockServiceDefaultVpcPrivateSubnet1RouteTable8DCA82E9",
+                "EKSMockServiceDefaultVpcPrivateSubnet1RouteTableAssociationC904ACF3",
+                "EKSMockServiceDefaultVpcPrivateSubnet1SubnetE64A1A8D",
+                "EKSMockServiceDefaultVpcPrivateSubnet2DefaultRoute37B9EECA",
+                "EKSMockServiceDefaultVpcPrivateSubnet2RouteTable4E1B422F",
+                "EKSMockServiceDefaultVpcPrivateSubnet2RouteTableAssociationF8F60261",
+                "EKSMockServiceDefaultVpcPrivateSubnet2Subnet9E8CC115",
+                "EKSMockServiceDefaultVpcPublicSubnet1DefaultRoute07E8C3D1",
+                "EKSMockServiceDefaultVpcPublicSubnet1EIP967DC0BA",
+                "EKSMockServiceDefaultVpcPublicSubnet1NATGatewayB7D81C32",
+                "EKSMockServiceDefaultVpcPublicSubnet1RouteTable46BF0165",
+                "EKSMockServiceDefaultVpcPublicSubnet1RouteTableAssociation259FCF73",
+                "EKSMockServiceDefaultVpcPublicSubnet1SubnetDF2BFC27",
+                "EKSMockServiceDefaultVpcPublicSubnet2DefaultRouteE6C98A16",
+                "EKSMockServiceDefaultVpcPublicSubnet2EIP3573258C",
+                "EKSMockServiceDefaultVpcPublicSubnet2NATGateway93554327",
+                "EKSMockServiceDefaultVpcPublicSubnet2RouteTableDD0CB433",
+                "EKSMockServiceDefaultVpcPublicSubnet2RouteTableAssociationADDD759F",
+                "EKSMockServiceDefaultVpcPublicSubnet2Subnet0FD16B2B",
+                "EKSMockServiceDefaultVpc0FCE91F5",
+                "EKSMockServiceDefaultVpcVPCGWD942D05F"
+            ]
+        },
+        "EKSMockService4418E7E4": {
+            "Type": "Custom::AWSCDK-EKS-Cluster",
+            "Properties": {
+                "ServiceToken": {
+                    "Fn::GetAtt": [
+                        "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
+                        "Outputs.mockserviceeksawscdkawseksClusterResourceProviderframeworkonEvent0D9B49F3Arn"
+                    ]
+                },
+                "Config": {
+                    "version": "1.29",
+                    "roleArn": {
+                        "Fn::GetAtt": [
+                            "EKSMockServiceRoleCC01075A",
+                            "Arn"
+                        ]
+                    },
+                    "kubernetesNetworkConfig": {
+                        "ipFamily": "ipv4"
+                    },
+                    "resourcesVpcConfig": {
+                        "subnetIds": [
+                            {
+                                "Ref": "EKSMockServiceDefaultVpcPublicSubnet1SubnetDF2BFC27"
+                            },
+                            {
+                                "Ref": "EKSMockServiceDefaultVpcPublicSubnet2Subnet0FD16B2B"
+                            },
+                            {
+                                "Ref": "EKSMockServiceDefaultVpcPrivateSubnet1SubnetE64A1A8D"
+                            },
+                            {
+                                "Ref": "EKSMockServiceDefaultVpcPrivateSubnet2Subnet9E8CC115"
+                            }
+                        ],
+                        "securityGroupIds": [
+                            {
+                                "Fn::GetAtt": [
+                                    "EKSMockServiceControlPlaneSecurityGroup5A5CAE99",
+                                    "GroupId"
+                                ]
+                            }
+                        ],
+                        "endpointPublicAccess": true,
+                        "endpointPrivateAccess": true
+                    }
+                },
+                "AssumeRoleArn": {
+                    "Fn::GetAtt": [
+                        "EKSMockServiceCreationRoleF10BB27D",
+                        "Arn"
+                    ]
+                },
+                "AttributesRevision": 2
+            },
+            "DependsOn": [
+                "EKSMockServiceDefaultVpcIGW0964E66B",
+                "EKSMockServiceDefaultVpcPrivateSubnet1DefaultRouteB5573011",
+                "EKSMockServiceDefaultVpcPrivateSubnet1RouteTable8DCA82E9",
+                "EKSMockServiceDefaultVpcPrivateSubnet1RouteTableAssociationC904ACF3",
+                "EKSMockServiceDefaultVpcPrivateSubnet1SubnetE64A1A8D",
+                "EKSMockServiceDefaultVpcPrivateSubnet2DefaultRoute37B9EECA",
+                "EKSMockServiceDefaultVpcPrivateSubnet2RouteTable4E1B422F",
+                "EKSMockServiceDefaultVpcPrivateSubnet2RouteTableAssociationF8F60261",
+                "EKSMockServiceDefaultVpcPrivateSubnet2Subnet9E8CC115",
+                "EKSMockServiceDefaultVpcPublicSubnet1DefaultRoute07E8C3D1",
+                "EKSMockServiceDefaultVpcPublicSubnet1EIP967DC0BA",
+                "EKSMockServiceDefaultVpcPublicSubnet1NATGatewayB7D81C32",
+                "EKSMockServiceDefaultVpcPublicSubnet1RouteTable46BF0165",
+                "EKSMockServiceDefaultVpcPublicSubnet1RouteTableAssociation259FCF73",
+                "EKSMockServiceDefaultVpcPublicSubnet1SubnetDF2BFC27",
+                "EKSMockServiceDefaultVpcPublicSubnet2DefaultRouteE6C98A16",
+                "EKSMockServiceDefaultVpcPublicSubnet2EIP3573258C",
+                "EKSMockServiceDefaultVpcPublicSubnet2NATGateway93554327",
+                "EKSMockServiceDefaultVpcPublicSubnet2RouteTableDD0CB433",
+                "EKSMockServiceDefaultVpcPublicSubnet2RouteTableAssociationADDD759F",
+                "EKSMockServiceDefaultVpcPublicSubnet2Subnet0FD16B2B",
+                "EKSMockServiceDefaultVpc0FCE91F5",
+                "EKSMockServiceDefaultVpcVPCGWD942D05F",
+                "EKSMockServiceCreationRoleDefaultPolicy80175C4C",
+                "EKSMockServiceCreationRoleF10BB27D"
+            ],
+            "UpdateReplacePolicy": "Delete",
+            "DeletionPolicy": "Delete"
+        },
+        "EKSMockServiceKubectlReadyBarrierD0CC07AB": {
+            "Type": "AWS::SSM::Parameter",
+            "Properties": {
+                "Type": "String",
+                "Value": "aws:cdk:eks:kubectl-ready"
+            },
+            "DependsOn": [
+                "EKSMockServiceCreationRoleDefaultPolicy80175C4C",
+                "EKSMockServiceCreationRoleF10BB27D",
+                "EKSMockService4418E7E4"
+            ]
+        },
+        "EKSMockServiceNodegroupDefaultCapacityNodeGroupRole81264AAC": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Statement": [
+                        {
+                            "Action": "sts:AssumeRole",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "ec2.amazonaws.com"
+                            }
+                        }
+                    ],
+                    "Version": "2012-10-17"
+                },
+                "ManagedPolicyArns": [
+                    {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "arn:",
+                                {
+                                    "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/AmazonEKSWorkerNodePolicy"
+                            ]
+                        ]
+                    },
+                    {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "arn:",
+                                {
+                                    "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/AmazonEKS_CNI_Policy"
+                            ]
+                        ]
+                    },
+                    {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "arn:",
+                                {
+                                    "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+                            ]
+                        ]
+                    }
+                ]
+            }
+        },
+        "EKSMockServiceNodegroupDefaultCapacityFC822E06": {
+            "Type": "AWS::EKS::Nodegroup",
+            "Properties": {
+                "AmiType": "AL2_x86_64",
+                "ClusterName": {
+                    "Ref": "EKSMockService4418E7E4"
+                },
+                "ForceUpdateEnabled": true,
+                "InstanceTypes": [
+                    "m5.large"
+                ],
+                "NodeRole": {
+                    "Fn::GetAtt": [
+                        "EKSMockServiceNodegroupDefaultCapacityNodeGroupRole81264AAC",
+                        "Arn"
+                    ]
+                },
+                "ScalingConfig": {
+                    "DesiredSize": 2,
+                    "MaxSize": 2,
+                    "MinSize": 2
+                },
+                "Subnets": [
+                    {
+                        "Ref": "EKSMockServiceDefaultVpcPrivateSubnet1SubnetE64A1A8D"
+                    },
+                    {
+                        "Ref": "EKSMockServiceDefaultVpcPrivateSubnet2Subnet9E8CC115"
+                    }
+                ]
+            }
+        },
+        "EKSMockServiceAwsAuthmanifestEBBF073D": {
+            "Type": "Custom::AWSCDK-EKS-KubernetesResource",
+            "Properties": {
+                "ServiceToken": {
+                    "Fn::GetAtt": [
+                        "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
+                        "Outputs.mockserviceeksawscdkawseksKubectlProviderframeworkonEvent23CDAF83Arn"
+                    ]
+                },
+                "Manifest": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            "[{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"metadata\":{\"name\":\"aws-auth\",\"namespace\":\"kube-system\",\"labels\":{\"aws.cdk.eks/prune-c833f52b2d2454604bc8d4edf253bdb395d16266e1\":\"\"}},\"data\":{\"mapRoles\":\"[{\\\"rolearn\\\":\\\"",
+                            {
+                                "Fn::GetAtt": [
+                                    "EKSMockServiceNodegroupDefaultCapacityNodeGroupRole81264AAC",
+                                    "Arn"
+                                ]
+                            },
+                            "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]}]\",\"mapUsers\":\"[]\",\"mapAccounts\":\"[]\"}}]"
+                        ]
+                    ]
+                },
+                "ClusterName": {
+                    "Ref": "EKSMockService4418E7E4"
+                },
+                "RoleArn": {
+                    "Fn::GetAtt": [
+                        "EKSMockServiceCreationRoleF10BB27D",
+                        "Arn"
+                    ]
+                },
+                "PruneLabel": "aws.cdk.eks/prune-c833f52b2d2454604bc8d4edf253bdb395d16266e1",
+                "Overwrite": true
+            },
+            "DependsOn": [
+                "EKSMockServiceKubectlReadyBarrierD0CC07AB"
+            ],
+            "UpdateReplacePolicy": "Delete",
+            "DeletionPolicy": "Delete"
+        },
+        "EKSMockServicemanifestEKSMockServicePod6FD3B023": {
+            "Type": "Custom::AWSCDK-EKS-KubernetesResource",
+            "Properties": {
+                "ServiceToken": {
+                    "Fn::GetAtt": [
+                        "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
+                        "Outputs.mockserviceeksawscdkawseksKubectlProviderframeworkonEvent23CDAF83Arn"
+                    ]
+                },
+                "Manifest": "[{\"api_version\":\"v1\",\"kind\":\"Pod\",\"metadata\":{\"name\":\"mypod\",\"labels\":{\"aws.cdk.eks/prune-c8f618d0ece6b301b9a5654639829290cf136c3fef\":\"\"}},\"spec\":{\"containers\":[{\"name\":\"hello\",\"image\":\"paulbouwer/hello-kubernetes:1.5\",\"ports\":[{\"container_port\":8080}]}]}}]",
+                "ClusterName": {
+                    "Ref": "EKSMockService4418E7E4"
+                },
+                "RoleArn": {
+                    "Fn::GetAtt": [
+                        "EKSMockServiceCreationRoleF10BB27D",
+                        "Arn"
+                    ]
+                },
+                "PruneLabel": "aws.cdk.eks/prune-c8f618d0ece6b301b9a5654639829290cf136c3fef"
+            },
+            "DependsOn": [
+                "EKSMockServiceKubectlReadyBarrierD0CC07AB"
+            ],
+            "UpdateReplacePolicy": "Delete",
+            "DeletionPolicy": "Delete"
+        },
+        "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454": {
+            "Type": "AWS::CloudFormation::Stack",
+            "Properties": {
+                "TemplateURL": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            "https://s3.",
+                            {
+                                "Ref": "AWS::Region"
+                            },
+                            ".",
+                            {
+                                "Ref": "AWS::URLSuffix"
+                            },
+                            "/",
+                            {
+                                "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                            },
+                            "/5ac77ccaa82772f127cd8ea542b8f453d5aebea2558e774694de03a9c4253f50.json"
+                        ]
+                    ]
+                }
+            },
+            "UpdateReplacePolicy": "Delete",
+            "DeletionPolicy": "Delete"
+        },
+        "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B": {
+            "Type": "AWS::CloudFormation::Stack",
+            "Properties": {
+                "Parameters": {
+                    "referencetomockserviceeksEKSMockServiceKubectlHandlerRoleDBCC9DA8Arn": {
+                        "Fn::GetAtt": [
+                            "EKSMockServiceKubectlHandlerRole90EFF8AC",
+                            "Arn"
+                        ]
+                    },
+                    "referencetomockserviceeksEKSMockServiceDefaultVpcPrivateSubnet1Subnet181374EFRef": {
+                        "Ref": "EKSMockServiceDefaultVpcPrivateSubnet1SubnetE64A1A8D"
+                    },
+                    "referencetomockserviceeksEKSMockServiceDefaultVpcPrivateSubnet2SubnetF2E9A731Ref": {
+                        "Ref": "EKSMockServiceDefaultVpcPrivateSubnet2Subnet9E8CC115"
+                    },
+                    "referencetomockserviceeksEKSMockService504ACB7BClusterSecurityGroupId": {
+                        "Fn::GetAtt": [
+                            "EKSMockService4418E7E4",
+                            "ClusterSecurityGroupId"
+                        ]
+                    }
+                },
+                "TemplateURL": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            "https://s3.",
+                            {
+                                "Ref": "AWS::Region"
+                            },
+                            ".",
+                            {
+                                "Ref": "AWS::URLSuffix"
+                            },
+                            "/",
+                            {
+                                "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                            },
+                            "/3b36e513aab63484ae7d3391de1b77ffdc7b0812bb7599f4f60f3e2049f42f5c.json"
+                        ]
+                    ]
+                }
+            },
+            "DependsOn": [
+                "EKSMockServiceDefaultVpcPrivateSubnet1DefaultRouteB5573011",
+                "EKSMockServiceDefaultVpcPrivateSubnet1RouteTableAssociationC904ACF3",
+                "EKSMockServiceDefaultVpcPrivateSubnet2DefaultRoute37B9EECA",
+                "EKSMockServiceDefaultVpcPrivateSubnet2RouteTableAssociationF8F60261",
+                "EKSMockServiceKubectlHandlerRoleDefaultPolicyE2896594",
+                "EKSMockServiceKubectlHandlerRole90EFF8AC"
+            ],
+            "UpdateReplacePolicy": "Delete",
+            "DeletionPolicy": "Delete"
+        }
+    },
+    "Conditions": {
+        "EKSMockServiceHasEcrPublic8A77ADDA": {
+            "Fn::Equals": [
+                {
+                    "Ref": "AWS::Partition"
+                },
+                "aws"
+            ]
+        }
+    },
+    "Parameters": {
+        "BootstrapVersion": {
+            "Type": "AWS::SSM::Parameter::Value<String>",
+            "Default": "/cdk-bootstrap/hnb659fds/version",
+            "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+        }
+    },
+    "Rules": {
+        "CheckBootstrapVersion": {
+            "Assertions": [
+                {
+                    "Assert": {
+                        "Fn::Not": [
+                            {
+                                "Fn::Contains": [
+                                    [
+                                        "1",
+                                        "2",
+                                        "3",
+                                        "4",
+                                        "5"
+                                    ],
+                                    {
+                                        "Ref": "BootstrapVersion"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+                }
+            ]
+        }
+    }
+}
