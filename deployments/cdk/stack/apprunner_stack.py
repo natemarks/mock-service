@@ -1,4 +1,5 @@
-# pylint: disable=line-too-long
+#!/usr/bin/env python3
+# pylint: disable=duplicate-code,line-too-long
 """ stack module"""
 from dataclasses import dataclass
 from constructs import Construct
@@ -23,7 +24,7 @@ class AppRunnerStackConfig:
 
 AR_STACK_CONFIG = AppRunnerStackConfig(
     prefix="MockService",
-    construct_id="test-mock-service",
+    construct_id="mock-service-app-runner",
     aws_account_number="709310380790",
     default_region="us-east-1",
     image_tag="latest",

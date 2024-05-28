@@ -237,7 +237,7 @@ cdk-diff: node_modules ## run cdk ls
        python --version; \
        source .venv/bin/activate; \
        cd deployments/cdk ; \
-       $(CDK) diff; \
+       $(CDK) diff --all; \
     )
 
 cdk-deploy: node_modules ## run cdk ls
@@ -249,7 +249,7 @@ cdk-deploy: node_modules ## run cdk ls
        python --version; \
        source .venv/bin/activate; \
        cd deployments/cdk ; \
-       $(CDK) deploy $(stack); \
+       $(CDK) deploy --all; \
     )
 
 cdk-destroy: node_modules ## run cdk ls

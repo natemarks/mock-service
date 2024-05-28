@@ -16,7 +16,7 @@ curl -X GET 'http://localhost:8080/version'
 version: 1c06d9400c27e035cc53fa598a9a150dd838ca02
 ```
 
-- graceful shutdown logging: logs the invocation of OS interrupt, SIGINT or SIGTERM AND logs the result of the graceful shutdown request. The service will wait for the SERVICE_GRACEFUL_SHUTDOWN_TIMEOUT before forcing a shutdown and throwing a deadline exceeded error.  If the service gracefully shuts down before the timeout, the log message will indicate graceful shutdown success.  This is useful in guaging whether the service is waiting for all transactions to complete before shutting down.
+- graceful shutdown logging: logs the invocation of OS interrupt, SIGINT or SIGTERM AND logs the result of the graceful shutdown request. The service will wait for the SERVICE_GRACEFUL_SHUTDOWN_TIMEOUT before forcing a shutdown and throwing a deadline exceeded error.  If the service gracefully shuts down before the timeout, the log message will indicate graceful shutdown success.  This is useful in gauging whether the service is waiting for all transactions to complete before shutting down.
 
  - the application waits for a requested period of time. This is useful for testing graceful shutdown because it synthesizes a long-running request.  If I invoke a 2-minute wait then request a graceful shutdown, the logs should show the graceful shutdown request and the deadline exceeded error log message for the graceful shutdown. If the wait is short enough, the graceful shutdown will succeed.
 
@@ -26,7 +26,7 @@ You waited for 3000ms
 ```
 
  # Usage
-If you just run the service and hit CTRL-C right awayyou should see the service start and graceful shutdown messages. Note that the app caught the os.interrupt  and invoked the graceful shutdown.  In the next message , the graceful shutdown succeeded.
+If you just run the service and hit CTRL-C right away you should see the service start and graceful shutdown messages. Note that the app caught the 'os.interrupt'  and invoked the graceful shutdown.  In the next message , the graceful shutdown succeeded.
 
 ```bash
 ./build/current/linux/amd64/mock-service/bootstrap 
@@ -113,4 +113,13 @@ fields @timestamp, @message, @logStream, @log
 | filter httpRequest.path="/ping"
 | sort @timestamp desc
 | limit 100
+```
+
+
+## fargate deployment
+
+get the DNS name from the load balancer to test
+```bash
+curl -X GET 'http://mock-s-MyFar-i4zsxoiCZVZl-1058116882.us-east-1.elb.amazonaws.com:80/ping'
+.
 ```
