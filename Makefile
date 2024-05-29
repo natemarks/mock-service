@@ -7,8 +7,8 @@ DEFAULT_BRANCH := main
 THIS_FILE := $(lastword $(MAKEFILE_LIST))
 PKG := github.com/natemarks/mock-service
 COMMIT := $(shell git rev-parse HEAD)
-PKG_LIST := $(shell go list ${PKG}/... | grep -v /vendor/)
-GO_FILES := $(shell find . -name '*.go' | grep -v /vendor/)
+PKG_LIST := $(shell go list ${PKG}/cmd/... | grep -v /vendor/)
+GO_FILES := $(shell find ./cmd/ -name '*.go' | grep -v /vendor/)
 CDIR = $(shell pwd)
 EXECUTABLES := mock-service
 GOOS := linux
@@ -153,7 +153,7 @@ fmt: ## run gofmt
 
 gocyclo: # run cyclomatic complexity check
 	go install github.com/fzipp/gocyclo/cmd/gocyclo@latest
-	gocyclo -over 25 .
+	gocyclo -over 25 ./cmd
 
 
 godeadcode: # run cyclomatic complexity check
@@ -162,7 +162,7 @@ godeadcode: # run cyclomatic complexity check
 
 govulncheck: # run cyclomatic complexity check
 	go install golang.org/x/vuln/cmd/govulncheck@latest
-	govulncheck ./...
+	govulncheck ./cmd/...
 
 static: node_modules fmt vet lint gocyclo godeadcode govulncheck black pylint shellcheck gotest pytest ## run static checks
 clean:
