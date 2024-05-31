@@ -45,10 +45,10 @@ class MockServiceEKSStack(
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        access_config = eks.CfnCluster.AccessConfigProperty(
-            authentication_mode="API_AND_CONFIG_MAP",
-            bootstrap_cluster_creator_admin_permissions=False,
-        )
+        # access_config = eks.CfnCluster.AccessConfigProperty(
+        #     authentication_mode="API_AND_CONFIG_MAP",
+        #     bootstrap_cluster_creator_admin_permissions=True,
+        # )
         eks_cluster = eks.Cluster(
             self,
             stack_cfg.prefix,
