@@ -66,7 +66,7 @@ black: ## use black to format python files
        git ls-files '*.py' |  xargs black --line-length=79; \
     )
 
-black-check: ## use black to format python files
+black-check: ## use black to check format python files without changing
 	( \
        . .venv/bin/activate; \
        git ls-files '*.py' |  xargs black --check --line-length=79; \
@@ -118,7 +118,7 @@ docker-release: docker-build ## push the docker images to ECR
 	   docker push $(AWS_ACCOUNT_NUMBER).dkr.ecr.$(AWS_REGION).amazonaws.com/$${e}:latest; \
     done ; \
 
-gotest: ## fgo tests
+gotest: ## go tests
 	@go test -v ${PKG_LIST}
 #	@go test -short ${PKG_LIST}
 
@@ -134,13 +134,12 @@ pytest_update_golden: ## update pytest golden files
        python3 -m pytest -v -m "unit" tests/ --update_golden; \
     )
 
-vet:
+vet: ## go vet
 	@go vet ${PKG_LIST}
 
 goimports: ## check imports
-	find node_modules/ -type f -name "*.go" -exec rm -f {} \;
 	go install golang.org/x/tools/cmd/goimports@latest
-	goimports -w .
+	goimports -w ./cmd
 
 lint:  ##  run golint
 	go install golang.org/x/lint/golint@latest
@@ -156,20 +155,17 @@ gocyclo: # run cyclomatic complexity check
 	gocyclo -over 25 ./cmd
 
 
-godeadcode: # run cyclomatic complexity check
+godeadcode: # look for unreachable code
 	go install golang.org/x/tools/cmd/deadcode@latest
 	deadcode -test github.com/natemarks/mock-service/cmd/...
 
-govulncheck: # run cyclomatic complexity check
+govulncheck: # check for vulnerabilities
 	go install golang.org/x/vuln/cmd/govulncheck@latest
 	govulncheck ./cmd/...
 
-static: node_modules fmt vet lint gocyclo godeadcode govulncheck black pylint shellcheck gotest pytest ## run static checks
-clean:
-	-@rm ${OUT} ${OUT}-v*
+static: node_modules goimports fmt vet lint gocyclo godeadcode govulncheck black pylint shellcheck gotest pytest ## run static checks
 
-
-git-status: ## require status is clean so we can use undo_edits to put things back
+git-status: ## require status is clean or error
 	@status=$$(git status --porcelain); \
 	if [ ! -z "$${status}" ]; \
 	then \
@@ -177,7 +173,7 @@ git-status: ## require status is clean so we can use undo_edits to put things ba
 		exit 1; \
 	fi
 
-shellcheck: ## use black to format python files
+shellcheck: ## run shellcheck
 	( \
        git ls-files '*.sh' |  xargs shellcheck --format=gcc; \
     )
@@ -211,7 +207,7 @@ docker-push: docker-build ## upload the latest docker image to ECR
 docker-run: ## run docker image
 	docker run --rm -p 8080:8080 mock-service:$(COMMIT)
 
-node_modules:
+node_modules: ## install node modules for CDK
 	bash scripts/update_cdk_libs.sh $(CDK_VERSION); \
 	find node_modules -name "*.go" -exec rm -f {} \; ; \
 	$(MAKE) clean-venv
@@ -228,7 +224,7 @@ cdk-ls: node_modules ## run cdk ls
        $(CDK) ls; \
     )
 
-cdk-diff: node_modules ## run cdk ls
+cdk-diff: node_modules ## run cdk diff on all stacks
 	# cdk executable usually: node_modules/aws-cdk/bin/cdk
 	# have to be evaluated after the node_modules target
 	( \
@@ -240,7 +236,7 @@ cdk-diff: node_modules ## run cdk ls
        $(CDK) diff --all; \
     )
 
-cdk-deploy: node_modules ## run cdk ls
+cdk-deploy: node_modules ## run cdk deploy on all stacks
 	# cdk executable usually: node_modules/aws-cdk/bin/cdk
 	# have to be evaluated after the node_modules target
 	( \
@@ -252,8 +248,7 @@ cdk-deploy: node_modules ## run cdk ls
        $(CDK) deploy --all; \
     )
 
-cdk-destroy: node_modules ## run cdk ls
-	# cdk executable usually: node_modules/aws-cdk/bin/cdk
+cdk-destroy: node_modules ## run cdk destroy on all stacks
 	# have to be evaluated after the node_modules target
 	( \
        source scripts/enable_pyenv.sh; \
@@ -265,7 +260,7 @@ cdk-destroy: node_modules ## run cdk ls
     )
 
 
-cdk-deploy-single: node_modules ## run cdk ls
+cdk-deploy-single: node_modules ## run cdk deploy on a single stack
 	# cdk executable usually: node_modules/aws-cdk/bin/cdk
 	# have to be evaluated after the node_modules target
 	( \
@@ -277,7 +272,7 @@ cdk-deploy-single: node_modules ## run cdk ls
        $(CDK) deploy $(STACK); \
     )
 
-cdk-destroy-single: node_modules ## run cdk ls
+cdk-destroy-single: node_modules ## run cdk destroy on a single stack
 	# cdk executable usually: node_modules/aws-cdk/bin/cdk
 	# have to be evaluated after the node_modules target
 	( \

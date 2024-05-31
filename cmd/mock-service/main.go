@@ -4,10 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
-	"github.com/go-chi/httplog/v2"
-	"github.com/natemarks/mock-service/version"
 	"log"
 	"log/slog"
 	"net/http"
@@ -15,6 +11,11 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/httplog/v2"
+	"github.com/natemarks/mock-service/version"
 )
 
 const (
