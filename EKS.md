@@ -1,4 +1,5 @@
-
+AWS tickert in sadnbxo account:
+https://support.console.aws.amazon.com/support/home?region=us-east-1#/case/?displayId=171715815300558&language=en
 
 deploy the stack
 
