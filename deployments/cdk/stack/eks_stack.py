@@ -44,6 +44,11 @@ class MockServiceEKSStack(
         **kwargs,
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
+
+        access_config = eks.CfnCluster.AccessConfigProperty(
+            authentication_mode="API_AND_CONFIG_MAP",
+            bootstrap_cluster_creator_admin_permissions=False,
+        )
         eks_cluster = eks.Cluster(
             self,
             stack_cfg.prefix,
@@ -76,4 +81,13 @@ class MockServiceEKSStack(
                     },
                 },
             },
+        )
+        eks.AlbController(
+            self,
+            f"{stack_cfg.prefix}ALBController",
+            cluster=eks_cluster,
+            version=eks.AlbControllerVersion.V2_6_2,
+            # the properties below are optional
+            # policy=policy,
+            # repository="repository"
         )
