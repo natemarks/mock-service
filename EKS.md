@@ -55,3 +55,14 @@ aws_whoami
  2041  gca
  2042  vim EKS.md
 ```
+
+
+## EKS CLI
+
+```bash
+export EKS_CLUSTER_NAME="$(aws eks list-clusters --output text | awk '{print $2}')"
+aws eks describe-cluster --name  "${EKS_CLUSTER_NAME}"
+aws eks update-kubeconfig --name  "${EKS_CLUSTER_NAME}"
+export ADMIN_POLICY_ARN="$(aws iam list-policies --query 'Policies[?PolicyName==`AdministratorAccess`].{ARN:Arn}' --output text)"
+
+```
