@@ -3,4 +3,4 @@ boto3
 pytest
 black
 pylint
-aws-cdk-lib==2.144.0
+aws-cdk-lib==2.153.0

@@ -1,0 +1,86 @@
+import aws_cdk as cdk
+from constructs import Construct
+
+import aws_cdk.aws_ec2 as ec2
+import aws_cdk.aws_ecs as ecs
+import aws_cdk.aws_ecs_patterns as ecs_patterns
+import aws_cdk.aws_ecs_patterns as ecsp
+import aws_cdk.aws_elasticloadbalancingv2 as elbv2
+import aws_cdk.aws_route53 as route53
+import aws_cdk.aws_route53_targets as route53_targets
+import aws_cdk.aws_eks as eks
+import aws_cdk.aws_iam as iam
+import aws_cdk.aws_ecr as ecr
+import aws_cdk.aws_lambda as lam
+import aws_cdk.lambda_layer_kubectl as kubectllayer
+
+class PythonV2AppStack(cdk.Stack):
+
+    def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
+        super().__init__(scope, construct_id, **kwargs)
+
+        eks_role = iam.Role(
+            self,
+            "eksEksRole",
+            assumed_by=iam.ServicePrincipal("eks.amazonaws.com"),
+            managed_policies=[
+                iam.ManagedPolicy.from_aws_managed_policy_name(
+                    "AmazonEKSClusterPolicy"
+                ),
+                iam.ManagedPolicy.from_aws_managed_policy_name(
+                    "AmazonEKSVPCResourceController"
+                ),
+            ],
+        )
+
+        repo = ecr.Repository.from_repository_name(
+            self, "eksRepo", "mock-service"
+        )
+
+        eksL2Cluster = eks.Cluster(
+            self,
+            "L2Cluster",
+            cluster_name="mock-service",
+            version=eks.KubernetesVersion.V1_30,
+            authentication_mode= eks.AuthenticationMode.API_AND_CONFIG_MAP,
+            bootstrap_cluster_creator_admin_permissions=True,
+            endpoint_access=eks.EndpointAccess.PUBLIC_AND_PRIVATE,
+            vpc_subnets=[
+                ec2.SubnetSelection(subnet_type=ec2.SubnetType.PRIVATE_WITH_EGRESS)
+            ],
+            # access_config=access_config,
+            # resources_vpc_config=resources_vpc_config,
+            role=eks_role,
+            kubectl_layer=kubectllayer.KubectlLayer(self, "kubectl")
+        )
+
+        eksL2Cluster.add_manifest(
+            "eksPod",
+            {
+                    "apiVersion": "apps/v1",
+                    "kind": "Deployment",
+                    "metadata": {"name": "mock-service"},
+                    "spec": {
+                        "replicas": 2,
+                        "selector": {"matchLabels": {"app": "mock-service"}},
+                        "template": {
+                            "metadata": {"labels": {"app": "mock-service"}},
+                            "spec": {
+                                "containers": [
+                                    {
+                                        "name": "mock-service",
+                                        "image": f"{repo.repository_uri}:latest",
+                                        "ports": [{"containerPort": 8080}],
+                                    }
+                                ]
+                            },
+                        },
+                    },
+                }
+        )
+        eks.AlbController(
+            self,
+            "eksALBController",
+            cluster=eksL2Cluster,
+            version=eks.AlbControllerVersion.V2_6_2,
+        )
