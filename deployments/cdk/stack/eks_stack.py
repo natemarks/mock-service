@@ -220,3 +220,20 @@ class MockServiceEKSStack(
             # policy=policy,
             # repository="repository"
         )
+
+        kctl_user_role = iam.Role.from_role_arn(
+            self,
+            f"{stack_cfg.prefix}KctlUserRole",
+            # pylint: disable=line-too-long
+            "arn:aws:sts::709310380790:assumed-role/AWSReservedSSO_AdministratorAccess_30daf8503494f58e/nmarks@imprivata.com",
+        )
+
+        aws_auth = eks.AwsAuth(
+            self, f"{stack_cfg.prefix}AwsAuth", cluster=els_l2_cluster
+        )
+        aws_auth.add_role_mapping(
+            role=kctl_user_role,
+            groups=[
+                "system:masters"
+            ],  # This grants admin privileges. Adjust the group as needed.
+        )

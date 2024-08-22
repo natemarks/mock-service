@@ -1922,6 +1922,34 @@
             "DependsOn": [
                 "AWSCDKCfnUtilsProviderCustomResourceProviderRoleFE0EE867"
             ]
+        },
+        "EKSMockServiceAwsAuthmanifest3D83DE97": {
+            "Type": "Custom::AWSCDK-EKS-KubernetesResource",
+            "Properties": {
+                "ServiceToken": {
+                    "Fn::GetAtt": [
+                        "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
+                        "Outputs.mockserviceeksawscdkawseksKubectlProviderframeworkonEvent23CDAF83Arn"
+                    ]
+                },
+                "Manifest": "[{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"metadata\":{\"name\":\"aws-auth\",\"namespace\":\"kube-system\",\"labels\":{\"aws.cdk.eks/prune-c8c314c3093c4f14a97ea5708a5429e9ee187123c9\":\"\"}},\"data\":{\"mapRoles\":\"[{\\\"rolearn\\\":\\\"arn:aws:sts::709310380790:assumed-role/AWSReservedSSO_AdministratorAccess_30daf8503494f58e/nmarks@imprivata.com\\\",\\\"username\\\":\\\"arn:aws:sts::709310380790:assumed-role/AWSReservedSSO_AdministratorAccess_30daf8503494f58e/nmarks@imprivata.com\\\",\\\"groups\\\":[\\\"system:masters\\\"]}]\",\"mapUsers\":\"[]\",\"mapAccounts\":\"[]\"}}]",
+                "ClusterName": {
+                    "Ref": "L2ClusterE60998BB"
+                },
+                "RoleArn": {
+                    "Fn::GetAtt": [
+                        "L2ClusterCreationRoleFCDE87E9",
+                        "Arn"
+                    ]
+                },
+                "PruneLabel": "aws.cdk.eks/prune-c8c314c3093c4f14a97ea5708a5429e9ee187123c9",
+                "Overwrite": true
+            },
+            "DependsOn": [
+                "L2ClusterKubectlReadyBarrier1037A14D"
+            ],
+            "UpdateReplacePolicy": "Delete",
+            "DeletionPolicy": "Delete"
         }
     },
     "Conditions": {

@@ -14,3 +14,20 @@ make destroy
 ```
 
 NOTE: CDK requires nodejs. It's installed from npm
+
+
+## EKS cluster
+
+need IAM privileges for EKS and k8s RBAC privilieges
+
+https://docs.aws.amazon.com/eks/latest/userguide/security_iam_id-based-policy-examples.html
+
+```text
+aws eks update-kubeconfig --region us-east-1 --name mock-service
+
+aws sts assume-role \
+--role-arn arn:aws:sts::709310380790:assumed-role/mock-service-eks-L2ClusterCreationRoleFCDE87E9-bikE392CN0x2/AWSCDK.EKSCluster.Create.bddc4380-2478-4aac-82b4-0c5d0744c4b7 \
+--role-session-name eks-mock-service
+
+kubectl get nodes
+```
