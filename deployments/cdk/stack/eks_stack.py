@@ -138,6 +138,7 @@ class MockServiceEKSStack(
             # resources_vpc_config=resources_vpc_config,
             role=eks_role,
             kubectl_layer=kubectllayer.KubectlLayer(self, "kubectl"),
+            cluster_logging=[eks.ClusterLoggingTypes.AUDIT],
         )
 
         els_l2_cluster.add_manifest(
@@ -220,20 +221,12 @@ class MockServiceEKSStack(
             # policy=policy,
             # repository="repository"
         )
-
-        kctl_user_role = iam.Role.from_role_arn(
-            self,
-            f"{stack_cfg.prefix}KctlUserRole",
-            # pylint: disable=line-too-long
-            "arn:aws:sts::709310380790:assumed-role/AWSReservedSSO_AdministratorAccess_30daf8503494f58e/nmarks@imprivata.com",
+        # pylint: disable=line-too-long
+        nate_role_arn = "arn:aws:sts::709310380790:assumed-role/AWSReservedSSO_AdministratorAccess_30daf8503494f58e/nmarks@imprivata.com"
+        iam_nate = iam.Role.from_role_arn(
+            self, f"{stack_cfg.prefix}IAMNate", nate_role_arn
         )
-
         aws_auth = eks.AwsAuth(
             self, f"{stack_cfg.prefix}AwsAuth", cluster=els_l2_cluster
         )
-        aws_auth.add_role_mapping(
-            role=kctl_user_role,
-            groups=[
-                "system:masters"
-            ],  # This grants admin privileges. Adjust the group as needed.
-        )
+        aws_auth.add_masters_role(iam_nate)
