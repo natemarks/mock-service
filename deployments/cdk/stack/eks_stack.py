@@ -221,12 +221,27 @@ class MockServiceEKSStack(
             # policy=policy,
             # repository="repository"
         )
+
+        # the section below was intended to add an IAM access entry to the cluster
+        # but it doesn't work
         # pylint: disable=line-too-long
-        nate_role_arn = "arn:aws:sts::709310380790:assumed-role/AWSReservedSSO_AdministratorAccess_30daf8503494f58e/nmarks@imprivata.com"
-        iam_nate = iam.Role.from_role_arn(
-            self, f"{stack_cfg.prefix}IAMNate", nate_role_arn
-        )
-        aws_auth = eks.AwsAuth(
-            self, f"{stack_cfg.prefix}AwsAuth", cluster=els_l2_cluster
-        )
-        aws_auth.add_masters_role(iam_nate)
+        # sso_role_arn = "arn:aws:iam::709310380790:role/aws-reserved/sso.amazonaws.com/AWSReservedSSO_AdministratorAccess_30daf8503494f58e"
+        # sso_role = iam.Role.from_role_arn(
+        #     self, f"{stack_cfg.prefix}IAMNate", sso_role_arn
+        # )
+        # sso_role.add_managed_policy(
+        #     iam.ManagedPolicy.from_managed_policy_arn(
+        #         self,
+        #         f"{stack_cfg.prefix}IAMNatePolicy",
+        #         "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy",
+        #     )
+        # )
+        #
+        # aws_auth = eks.AwsAuth(
+        #     self, f"{stack_cfg.prefix}AwsAuth", cluster=els_l2_cluster
+        # )
+        # aws_auth.add_role_mapping(
+        #     sso_role,
+        #     groups=["system:masters"],  # Map to system:masters for full access
+        #     username="system:node:{{SessionName}}",  # Using SessionName placeholder
+        # )

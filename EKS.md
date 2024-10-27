@@ -3,66 +3,58 @@ https://support.console.aws.amazon.com/support/home?region=us-east-1#/case/?disp
 
 deploy the stack
 
-change the authentication mode t:
 
-<BS>EKS API and ConfigMap
-
-iwe should be able to use this to set that, but it doesn't work with teh L2
-construct
-
-```python
-        access_config = eks.CfnCluster.AccessConfigProperty(
-            authentication_mode="API_AND_CONFIG_MAP",
-            bootstrap_cluster_creator_admin_permissions=True,
-        )
-```
-
-
-manually create IAm access entries for my user:
-AmazonEKSAdminPolicy
-AmazonEKSAdminViewPolicy
-AmazonEKSClusterAdminPolicyA
-
-
+kubectl access fails:
 ```bash
 
-aws_whoami 
- 2016  aws eks --region us-east-1 update-kubeconfig --name EKSMockService4418E7E4-b876a39ce4b74f7c986328f12c053d32
- 2017  kubectl 
- 2018* kubectl versionA
- 2019  aws eks --region us-east-1 update-kubeconfig --name EKSMockService4418E7E4-b876a39ce4b74f7c986328f12c053d32
- 2020  kubectl get pods -A
- 2021  kubectl get svc
- 2022  kubectl exec -it mock-service-68885c88db-48mr9 -- /bin/bash
- 2023  make static 
- 2024  make pytest_update_golden 
- 2025  make STACK=mock-service-eks cdk-deploy-single 
- 2026  kubectl get pods -n kube-system
- 2027  make static 
- 2028  kubectl get deploy
- 2029  kubectl describe deploy mock-service
- 2030  vim ggg.yml
- 2031  kubectl apply -f ggg.yml 
- 2032  vim ggg.yml
- 2033  kubectl apply -f ggg.yml 
- 2034  kubectl get ingress
- 2035    curl -X GET 'http://k8s-default-mockingr-36a1a0e310-494347807.us-east-1.elb.amazonaws.com/?wait=2000ms'
- 2036   curl -X GET 'http://k8s-default-mockingr-36a1a0e310-494347807.us-east-1.elb.amazonaws.com/?wait=2000ms'
- 2037  which curl
- 2038  curl -X GET 'http://k8s-default-mockingr-36a1a0e310-494347807.us-east-1.elb.amazonaws.com/?wait=2000ms'
- 2039  pkill zoom 
- 2040  gaa
- 2041  gca
- 2042  vim EKS.md
+aws eks --region us-east-1 update-kubeconfig --name mock-service
+Updated context arn:aws:eks:us-east-1:709310380790:cluster/mock-service in /home/nmarks/.kube/config
+
+
+kubectl get pods -A
+E0925 09:59:13.361059  655204 memcache.go:265] couldn't get current server API group list: the server has asked for the client to provide credentials
+E0925 09:59:13.954295  655204 memcache.go:265] couldn't get current server API group list: the server has asked for the client to provide credentials
+E0925 09:59:14.522212  655204 memcache.go:265] couldn't get current server API group list: the server has asked for the client to provide credentials
+E0925 09:59:15.094677  655204 memcache.go:265] couldn't get current server API group list: the server has asked for the client to provide credentials
+E0925 09:59:15.652729  655204 memcache.go:265] couldn't get current server API group list: the server has asked for the client to provide credentials
+error: You must be logged in to the server (the server has asked for the client to provide credentials)
+
+```
+In the AWS Console:
+in the cluster -> Access -> IAM Access Entries create an entry for the assumed role arn for SSO (arn:aws:iam::709310380790:role/aws-reserved/sso.amazonaws.com/AWSReservedSSO_AdministratorAccess_30daf8503494f58e) and give it AmazonEKSClusterAdminPolicy (arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy)
+
+Figure out how to do apply the same change using the CLI. This doesnt' work:
+```bash
+
+aws eks create-access-entry \
+--cluster-name mock-service \
+--principal-arn arn:aws:iam::709310380790:role/aws-reserved/sso.amazonaws.com/AWSReservedSSO_AdministratorAccess_30daf8503494f58e
+
+    
+aws eks associate-access-policy \
+--cluster-name mock-service \
+--principal-arn arn:aws:iam::709310380790:role/aws-reserved/sso.amazonaws.com/AWSReservedSSO_AdministratorAccess_30daf8503494f58e \
+--policy-arn arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy \
+--access-scope type=cluster
+
 ```
 
-
-## EKS CLI
-
+now kubectl works:
 ```bash
-export EKS_CLUSTER_NAME="$(aws eks list-clusters --output text | awk '{print $2}')"
-aws eks describe-cluster --name  "${EKS_CLUSTER_NAME}"
-aws eks update-kubeconfig --name  "${EKS_CLUSTER_NAME}"
-export ADMIN_POLICY_ARN="$(aws iam list-policies --query 'Policies[?PolicyName==`AdministratorAccess`].{ARN:Arn}' --output text)"
+
+aws eks --region us-east-1 update-kubeconfig --name mock-service
+Updated context arn:aws:eks:us-east-1:709310380790:cluster/mock-service in /home/nmarks/.kube/config
+ nmarks  ~  projects  mock-service   eks ✚ 1  kubectl get pods -A
+NAMESPACE     NAME                                            READY   STATUS    RESTARTS   AGE
+default       mock-service-5d89fb769f-6n8z5                   1/1     Running   0          3m26s
+default       mock-service-5d89fb769f-pgb9p                   1/1     Running   0          3m26s
+kube-system   aws-load-balancer-controller-5bb6c9458d-6qjlm   1/1     Running   0          3m15s
+kube-system   aws-load-balancer-controller-5bb6c9458d-92scf   1/1     Running   0          3m15s
+kube-system   aws-node-hbjgr                                  2/2     Running   0          7m22s
+kube-system   aws-node-z2sxz                                  2/2     Running   0          7m22s
+kube-system   coredns-586b798467-jmc9z                        1/1     Running   0          10m
+kube-system   coredns-586b798467-x84v7                        1/1     Running   0          10m
+kube-system   kube-proxy-kx4m7                                1/1     Running   0          7m22s
+kube-system   kube-proxy-wnqr2                                1/1     Running   0          7m22s
 
 ```
