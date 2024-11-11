@@ -204,8 +204,8 @@ shellcheck: ## use black to format python files
 docker-push: docker-build ## upload the latest docker image to ECR
 	( \
 	   aws ecr get-login-password --region $(AWS_REGION) | docker login --username AWS --password-stdin $(AWS_ACCOUNT_NUMBER).dkr.ecr.$(AWS_REGION).amazonaws.com; \
-	   docker tag ecs_with_cw_logs:latest $(AWS_ACCOUNT_NUMBER).dkr.ecr.$(AWS_REGION).amazonaws.com/ecs_with_cw_logs:latest; \
-	   docker push $(AWS_ACCOUNT_NUMBER).dkr.ecr.$(AWS_REGION).amazonaws.com/ecs_with_cw_logs:latest; \
+	   docker tag mock-service:latest $(AWS_ACCOUNT_NUMBER).dkr.ecr.$(AWS_REGION).amazonaws.com/mock-service:latest; \
+	   docker push $(AWS_ACCOUNT_NUMBER).dkr.ecr.$(AWS_REGION).amazonaws.com/mock-service:latest; \
 	)
 
 docker-run: ## run docker image
@@ -266,3 +266,4 @@ cdk-destroy: node_modules ## run cdk ls
 
 
 .PHONY: build release static upload vet lint fmt gocyclo goimports test
+
