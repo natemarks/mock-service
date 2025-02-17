@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-""" CDK entry point """
+"""CDK entry point"""
 
 import aws_cdk as cdk
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # pylint: disable=duplicate-code,line-too-long
-""" stack module"""
+"""stack module"""
 from dataclasses import dataclass
 from constructs import Construct
 from aws_cdk import (

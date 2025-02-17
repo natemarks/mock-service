@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # pylint: disable=duplicate-code
-"""EKS stack module.
-"""
+"""EKS stack module."""
 from dataclasses import dataclass
 from constructs import Construct
 from aws_cdk import (
@@ -125,7 +124,7 @@ class MockServiceEKSStack(
             self,
             "L2Cluster",
             cluster_name="mock-service",
-            version=eks.KubernetesVersion.V1_30,
+            version=eks.KubernetesVersion.V1_31,
             authentication_mode=eks.AuthenticationMode.API_AND_CONFIG_MAP,
             bootstrap_cluster_creator_admin_permissions=True,
             endpoint_access=eks.EndpointAccess.PUBLIC_AND_PRIVATE,

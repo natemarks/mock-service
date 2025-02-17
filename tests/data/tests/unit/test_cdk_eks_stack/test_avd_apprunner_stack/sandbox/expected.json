@@ -50,7 +50,7 @@
                     "S3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                     },
-                    "S3Key": "7e5f48d1e79c915595d938c932b6f0101715a162780d01a55845367e014fbcda.zip"
+                    "S3Key": "07aae4eff01fbf4a54ce6dc5c34000cf2a6c6e18567992cf42e549ac25a80afe.zip"
                 },
                 "Description": "/opt/kubectl/kubectl and /opt/helm/helm"
             }
@@ -863,7 +863,7 @@
                 },
                 "Config": {
                     "name": "mock-service",
-                    "version": "1.30",
+                    "version": "1.31",
                     "roleArn": {
                         "Fn::GetAtt": [
                             "EKSMockServiceEksRole4802C9EB",
@@ -892,6 +892,16 @@
                         ],
                         "endpointPublicAccess": true,
                         "endpointPrivateAccess": true
+                    },
+                    "logging": {
+                        "clusterLogging": [
+                            {
+                                "enabled": true,
+                                "types": [
+                                    "audit"
+                                ]
+                            }
+                        ]
                     },
                     "accessConfig": {
                         "authenticationMode": "API_AND_CONFIG_MAP",
@@ -1141,7 +1151,8 @@
                         "OpenIdConnectIssuerUrl"
                     ]
                 },
-                "CodeHash": "977fc1649d2dbcce16e23f6332faef6fa0f48aa74a0afe35f4a3467754e20cd8"
+                "RejectUnauthorized": false,
+                "CodeHash": "62fa02efcaa700e1c247e1d3cc2aa0cd07a0808a9a3e3d2230e51f57a02233fb"
             },
             "UpdateReplacePolicy": "Delete",
             "DeletionPolicy": "Delete"
@@ -1165,7 +1176,7 @@
                             {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                             },
-                            "/89fbe9a500d02dc0a962bf53ee613bcb66433586fffff9196d2ec4aa00aa58ab.json"
+                            "/c1f0ec56f0a59371ed342ddf0404d1d162e6b5302c37dbf91935c2f319412407.json"
                         ]
                     ]
                 }
@@ -1215,7 +1226,7 @@
                             {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                             },
-                            "/cb0bc4b08bc57564558beb64bd0c99c162b9a77d45a45f0ab3bfb8a3ad155a9a.json"
+                            "/5d042d6fd28009a908f799aa472131518ccf5b73062d55ac8d9249a0af3bc451.json"
                         ]
                     ]
                 }
@@ -1844,7 +1855,7 @@
                     "S3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                     },
-                    "S3Key": "977fc1649d2dbcce16e23f6332faef6fa0f48aa74a0afe35f4a3467754e20cd8.zip"
+                    "S3Key": "62fa02efcaa700e1c247e1d3cc2aa0cd07a0808a9a3e3d2230e51f57a02233fb.zip"
                 },
                 "Timeout": 900,
                 "MemorySize": 128,
@@ -1898,7 +1909,7 @@
                     "S3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                     },
-                    "S3Key": "70dc346d78f37c98f818c01173252d7441864d42268efd4ee44769cbd6f31d24.zip"
+                    "S3Key": "c398d076c966a47ee4ef862fbaf5ea530bf035b867a0195292c99f77b323ed80.zip"
                 },
                 "Timeout": 900,
                 "MemorySize": 128,
@@ -1922,34 +1933,6 @@
             "DependsOn": [
                 "AWSCDKCfnUtilsProviderCustomResourceProviderRoleFE0EE867"
             ]
-        },
-        "EKSMockServiceAwsAuthmanifest3D83DE97": {
-            "Type": "Custom::AWSCDK-EKS-KubernetesResource",
-            "Properties": {
-                "ServiceToken": {
-                    "Fn::GetAtt": [
-                        "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
-                        "Outputs.mockserviceeksawscdkawseksKubectlProviderframeworkonEvent23CDAF83Arn"
-                    ]
-                },
-                "Manifest": "[{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"metadata\":{\"name\":\"aws-auth\",\"namespace\":\"kube-system\",\"labels\":{\"aws.cdk.eks/prune-c8c314c3093c4f14a97ea5708a5429e9ee187123c9\":\"\"}},\"data\":{\"mapRoles\":\"[{\\\"rolearn\\\":\\\"arn:aws:sts::709310380790:assumed-role/AWSReservedSSO_AdministratorAccess_30daf8503494f58e/nmarks@imprivata.com\\\",\\\"username\\\":\\\"arn:aws:sts::709310380790:assumed-role/AWSReservedSSO_AdministratorAccess_30daf8503494f58e/nmarks@imprivata.com\\\",\\\"groups\\\":[\\\"system:masters\\\"]}]\",\"mapUsers\":\"[]\",\"mapAccounts\":\"[]\"}}]",
-                "ClusterName": {
-                    "Ref": "L2ClusterE60998BB"
-                },
-                "RoleArn": {
-                    "Fn::GetAtt": [
-                        "L2ClusterCreationRoleFCDE87E9",
-                        "Arn"
-                    ]
-                },
-                "PruneLabel": "aws.cdk.eks/prune-c8c314c3093c4f14a97ea5708a5429e9ee187123c9",
-                "Overwrite": true
-            },
-            "DependsOn": [
-                "L2ClusterKubectlReadyBarrier1037A14D"
-            ],
-            "UpdateReplacePolicy": "Delete",
-            "DeletionPolicy": "Delete"
         }
     },
     "Conditions": {
@@ -2010,10 +1993,10 @@
                 "value": "nodejs20.x"
             },
             "cn-north-1": {
-                "value": "nodejs18.x"
+                "value": "nodejs20.x"
             },
             "cn-northwest-1": {
-                "value": "nodejs18.x"
+                "value": "nodejs20.x"
             },
             "eu-central-1": {
                 "value": "nodejs20.x"
@@ -2064,10 +2047,10 @@
                 "value": "nodejs20.x"
             },
             "us-gov-east-1": {
-                "value": "nodejs18.x"
+                "value": "nodejs20.x"
             },
             "us-gov-west-1": {
-                "value": "nodejs18.x"
+                "value": "nodejs20.x"
             },
             "us-iso-east-1": {
                 "value": "nodejs18.x"

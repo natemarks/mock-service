@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # pylint: disable=duplicate-code
-"""Test ecs with cloudwatch logs
-"""
+"""Test ecs with cloudwatch logs"""
 from dataclasses import dataclass
 from constructs import Construct
 from aws_cdk import (

@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
-"""Helper functions for pytest
-
-
-"""
+"""Helper functions for pytest"""
 import json
 import os
 import pathlib

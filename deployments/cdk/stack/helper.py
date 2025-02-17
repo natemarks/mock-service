@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
-""" project data module
-
-
-"""
+"""project data module"""
 
 
 import boto3

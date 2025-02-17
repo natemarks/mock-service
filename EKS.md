@@ -58,3 +58,28 @@ kube-system   kube-proxy-kx4m7                                1/1     Running   
 kube-system   kube-proxy-wnqr2                                1/1     Running   0          7m22s
 
 ```
+
+
+
+## Experiments:
+
+### ch4
+
+```
+# run busybox and open a shell
+kubectl run -it busybox  --image=busybox --restart Never
+```
+
+```
+# print manifest in yaml
+kubectl run busybox  --image=busybox --restart Never --dry-run=client -o yaml
+```
+
+```
+#delete 
+kubectl get pods
+kubectl delete pod busybox
+```
+
+
+

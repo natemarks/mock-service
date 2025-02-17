@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 # pylint: disable=duplicate-code
-"""data classes for stack/biometric_aware.py
-
-
-"""
+"""data classes for stack/biometric_aware.py"""
 import pytest
 from aws_cdk import App, assertions
 from tests.helper import Case

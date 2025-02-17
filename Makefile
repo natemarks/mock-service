@@ -284,5 +284,18 @@ cdk-destroy-single: node_modules ## run cdk destroy on a single stack
        $(CDK) destroy $(STACK); \
     )
 
+cdk-bootstrap: node_modules .venv ## bootstrap the default account and region for an environment
+	# cdk executable usually: node_modules/aws-cdk/bin/cdk
+	# have to be evaluated after the node_modules target
+	$(eval CDK := $(shell find . -type f -name cdk))
+	# source the pyenv config script
+	# set the local python version. redundant but harmless
+	( \
+       source scripts/enable_pyenv.sh; \
+       pyenv local $(PYTHON_VERSION); \
+       python --version; \
+       source .venv/bin/activate; \
+       $(CDK) $(shell bash scripts/cdk_bootstrap.sh) -c app_env=$(app_env); \
+    )
 
 .PHONY: build release static upload vet lint fmt gocyclo goimports test

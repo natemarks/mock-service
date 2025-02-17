@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-"""Custom pytest options
-
-"""
+"""Custom pytest options"""
 import pytest
 
 
